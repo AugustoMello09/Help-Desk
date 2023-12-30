@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +35,8 @@ public abstract class Usuario implements Serializable {
 	private UUID id;
 
 	private String nome;
+	
+	@Column(unique = true)
 	private String email;
 
 	@ManyToMany(fetch = FetchType.EAGER)

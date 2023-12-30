@@ -46,13 +46,15 @@ public class Chamado implements Serializable{
 	public Chamado() {}
 
 	public Chamado(Long id, LocalDateTime dataAberto, String descricao, LocalDateTime dataFechamento,
-			StatusChamado statusChamado) {
+			StatusChamado statusChamado, Tecnico tecnico, Cliente cliente) {
 		super();
 		this.id = id;
 		this.dataAberto = LocalDateTime.now();
 		this.descricao = descricao;
 		this.dataFechamento = dataFechamento;
 		this.statusChamado = StatusChamado.ABERTO;
+		this.cliente = cliente;
+		this.tecnico = tecnico;
 	}
 	
 	
