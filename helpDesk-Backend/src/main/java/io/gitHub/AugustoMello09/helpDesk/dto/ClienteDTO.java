@@ -30,4 +30,11 @@ public class ClienteDTO {
 
 	}
 
+	public ClienteDTO(UUID id, String nome, String email) {
+		super();
+		this.id = id;
+		this.nome = nome;
+		this.email = email;
+	}
+
 }

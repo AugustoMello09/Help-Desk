@@ -3,6 +3,7 @@ package io.gitHub.AugustoMello09.helpDesk.services;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.CargoDTO;
@@ -14,15 +15,16 @@ import io.gitHub.AugustoMello09.helpDesk.repositories.ClienteRepository;
 import io.gitHub.AugustoMello09.helpDesk.services.exceptions.DataIntegratyViolationException;
 import io.gitHub.AugustoMello09.helpDesk.services.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+
 @Service
 public class ClienteService {
-
-	private final ClienteRepository repository;
 	
-	private final CargoRepository cargoRepository;
+	@Autowired
+	private ClienteRepository repository;
+	
+	@Autowired
+	private CargoRepository cargoRepository;
 	
 	public ClienteDTO findById(UUID id) {
 		Optional<Cliente> cli = repository.findById(id);

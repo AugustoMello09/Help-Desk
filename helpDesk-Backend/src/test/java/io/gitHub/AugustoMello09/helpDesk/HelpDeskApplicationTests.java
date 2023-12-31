@@ -8,6 +8,7 @@ class HelpDeskApplicationTests {
 
 	@Test
 	void contextLoads() {
+		HelpDeskApplication.main(new String[] {});
 	}
 
 }

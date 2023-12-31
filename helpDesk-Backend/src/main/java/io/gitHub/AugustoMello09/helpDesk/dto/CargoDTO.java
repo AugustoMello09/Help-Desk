@@ -1,8 +1,10 @@
 package io.gitHub.AugustoMello09.helpDesk.dto;
 
 import io.gitHub.AugustoMello09.helpDesk.entities.Cargo;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+@AllArgsConstructor
 @Data
 public class CargoDTO {
 
