@@ -1,0 +1,184 @@
+package io.gitHub.AugustoMello09.helpDesk.services;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import io.gitHub.AugustoMello09.helpDesk.dto.CargoDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
+import io.gitHub.AugustoMello09.helpDesk.entities.Cargo;
+import io.gitHub.AugustoMello09.helpDesk.entities.Tecnico;
+import io.gitHub.AugustoMello09.helpDesk.repositories.CargoRepository;
+import io.gitHub.AugustoMello09.helpDesk.repositories.TecnicoRepository;
+import io.gitHub.AugustoMello09.helpDesk.services.exceptions.DataIntegratyViolationException;
+import io.gitHub.AugustoMello09.helpDesk.services.exceptions.ObjectNotFoundException;
+
+@SpringBootTest
+public class TecnicoServiceTest {
+
+	private static final String NOME = "José";
+
+	private static final String EMAIL = "meuEmail@gmail.com";
+
+	private static final UUID ID = UUID.fromString("148cf4fc-b379-4e25-8bf4-f73feb06befa");
+
+	private Optional<Tecnico> tecnicoOptional;
+
+	private TecnicoDTO tecnicoDto;
+
+	private Tecnico tecnico;
+
+	private Cargo cargo;
+
+	private Optional<Cargo> cargoOptional;
+
+	private CargoDTO cargoDTO;
+
+	@Mock
+	private TecnicoRepository repository;
+
+	@Mock
+	private CargoRepository cargoRepository;
+
+	@InjectMocks
+	private TecnicoService service;
+
+	@BeforeEach
+	public void setUp() {
+		MockitoAnnotations.openMocks(this);
+		startTecnico();
+	}
+
+	@DisplayName("Deve retornar um Técnico com sucesso.")
+	@Test
+	public void shouldReturnATecWithSuccess() {
+		when(repository.findById(ID)).thenReturn(tecnicoOptional);
+		var response = service.findById(ID);
+		assertNotNull(response);
+		assertEquals(TecnicoDTO.class, response.getClass());
+		assertEquals(ID, response.getId());
+		assertEquals(NOME, response.getNome());
+		assertEquals(EMAIL, response.getEmail());
+	}
+
+	@DisplayName("Deve retornar Tecnico não encontrado.")
+	@Test
+	public void shouldReturnTecNotFound() {
+		when(repository.findById(ID)).thenReturn(Optional.empty());
+		assertThrows(ObjectNotFoundException.class, () -> service.findById(ID));
+	}
+
+	@DisplayName("Deve alterar o email com sucesso quando técnico encontrado.")
+	@Test
+	void whenUpdateClientThenReturnTecnicoDTO() {
+		TecnicoDTO objDto = new TecnicoDTO(ID, NOME, "novoEmail@gmail.com");
+		Tecnico tecnico = new Tecnico(ID, NOME, EMAIL);
+
+		when(repository.findById(ID)).thenReturn(Optional.of(tecnico));
+		when(repository.save(any(Tecnico.class))).thenReturn(tecnico);
+		var result = service.updateEmail(objDto, ID);
+		assertNotNull(result);
+		assertEquals(ID, result.getId());
+		assertEquals(objDto.getEmail(), result.getEmail());
+		verify(repository, times(1)).findById(ID);
+		verify(repository, times(1)).save(any(Tecnico.class));
+	}
+
+	@DisplayName("Atualização Deve retornar Técnico não encontrado.")
+	@Test
+	public void shouldUpdateReturnTecNotFound() {
+		when(repository.findById(ID)).thenReturn(Optional.empty());
+		assertThrows(ObjectNotFoundException.class, () -> service.updateEmail(tecnicoDto, ID));
+	}
+
+	@DisplayName("Deve retornar Email já existe.")
+	@Test
+	public void shouldReturnDataIntegratyViolationExceptionWhenEmailExist() {
+		UUID existingTecnicoId = UUID.randomUUID();
+		TecnicoDTO tecnicoDTO = new TecnicoDTO(UUID.randomUUID(), "José", "meuEmail@gmail.com");
+		when(repository.findByEmail(tecnicoDTO.getEmail()))
+				.thenReturn(Optional.of(new Tecnico(existingTecnicoId, "OutroNome", "meuEmail@gmail.com")));
+		DataIntegratyViolationException exception = assertThrows(DataIntegratyViolationException.class, () -> {
+			service.verificarEmailExistente(tecnicoDTO);
+		});
+		assertEquals("Email já existe", exception.getMessage());
+	}
+
+	@DisplayName("Não deve lançar exceção quando o e-mail existe para o mesmo técnico")
+	@Test
+	public void shouldNotThrowExceptionWhenEmailExistsForSameTec() {
+		UUID tecnicoId = UUID.randomUUID();
+		TecnicoDTO tecnicoDTO = new TecnicoDTO(tecnicoId, "José", "meuEmail@gmail.com");
+		when(repository.findByEmail(tecnicoDTO.getEmail()))
+				.thenReturn(Optional.of(new Tecnico(tecnicoId, "José", "meuEmail@gmail.com")));
+		assertDoesNotThrow(() -> {
+			service.verificarEmailExistente(tecnicoDTO);
+		});
+	}
+
+	@DisplayName("Deve criar um tecnico.")
+	@Test
+	public void testCreate() {
+		when(repository.save(any(Tecnico.class))).thenReturn(tecnico);
+		when(cargoRepository.findById(anyLong())).thenReturn(cargoOptional);
+		TecnicoDTO response = service.create(tecnicoDto);
+		assertNotNull(response);
+		assertEquals(NOME, response.getNome());
+		assertEquals(EMAIL, response.getEmail());
+		assertNotNull(response.getCargos());
+		verify(repository, times(1)).save(any(Tecnico.class));
+	}
+
+	@DisplayName("Deve associar um cargo na criação.")
+	@Test
+	public void atribuirCargo() {
+		when(cargoRepository.findById(cargoDTO.getId())).thenReturn(Optional.of(cargo));
+		service.atribuirCargo(tecnico, tecnicoDto);
+		assertEquals(1, tecnico.getCargos().size());
+		assertTrue(tecnico.getCargos().contains(cargo));
+	}
+
+	@DisplayName("Não deve encontrar um cargo.")
+	@Test
+	public void CargoNotFound() {
+		when(cargoRepository.findById(anyLong())).thenReturn(Optional.empty());
+		ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> {
+			service.atribuirCargo(tecnico, tecnicoDto);
+		});
+		assertEquals("Cargo não encontrado", exception.getMessage());
+
+	}
+
+	private void startTecnico() {
+		tecnico = new Tecnico(ID, NOME, EMAIL);
+		tecnicoDto = new TecnicoDTO(ID, NOME, EMAIL);
+		tecnicoOptional = Optional.of(tecnico);
+		cargo = new Cargo(1L, "ADM");
+		cargoOptional = Optional.of(cargo);
+		cargoDTO = new CargoDTO(1L, "ADM");
+		tecnico.setCargos(new HashSet<>());
+		tecnico.getCargos().add(cargo);
+		tecnicoDto.setCargos(new HashSet<>());
+		tecnicoDto.getCargos().add(cargoDTO);
+	}
+
+}
