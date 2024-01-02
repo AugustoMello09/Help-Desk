@@ -1,5 +1,6 @@
 package io.gitHub.AugustoMello09.helpDesk.services;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,23 +23,22 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class TecnicoService {
-	
+
 	@Autowired
 	private TecnicoRepository repository;
-	
+
 	@Autowired
 	private CargoRepository cargoRepository;
-	
+
 	@Autowired
 	private ChamadoRepository chamadoRepository;
-	
+
 	public TecnicoDTO findById(UUID id) {
 		Optional<Tecnico> cli = repository.findById(id);
-		Tecnico entity = cli.orElseThrow(
-				()-> new ObjectNotFoundException("Tecnico não encontrado"));
+		Tecnico entity = cli.orElseThrow(() -> new ObjectNotFoundException("Tecnico não encontrado"));
 		return new TecnicoDTO(entity);
 	}
-	
+
 	@Transactional
 	public TecnicoDTO create(TecnicoDTO tecnicoDTO) {
 		Tecnico entity = new Tecnico();
@@ -49,21 +49,24 @@ public class TecnicoService {
 		repository.save(entity);
 		return new TecnicoDTO(entity);
 	}
-	
+
 	@Transactional
 	public TecnicoDTO updateEmail(TecnicoDTO tecnicoDTO, UUID id) {
-		Tecnico entity = repository.findById(id).orElseThrow(
-				()-> new ObjectNotFoundException("Tecnico não encontrado"));
+		Tecnico entity = repository.findById(id)
+				.orElseThrow(() -> new ObjectNotFoundException("Tecnico não encontrado"));
 		verificarEmailExistente(tecnicoDTO);
 		entity.setEmail(tecnicoDTO.getEmail());
 		repository.save(entity);
 		return new TecnicoDTO(entity);
 	}
-	
+
 	@Transactional
 	public ChamadoDTO aceitarChamado(Long id, UUID idTecnico) {
 		Chamado chamado = chamadoRepository.findById(id)
 				.orElseThrow(() -> new ObjectNotFoundException("Chamado não encontrado"));
+		if (chamado.getTecnico() != null && !chamado.getTecnico().getId().equals(idTecnico)) {
+	        throw new DataIntegratyViolationException("Este chamado já está em andamento e possui um técnico associado.");
+	    }
 		Tecnico tecnico = repository.findById(idTecnico)
 				.orElseThrow(() -> new ObjectNotFoundException("Técnico não encontrado"));
 		chamado.setTecnico(tecnico);
@@ -71,17 +74,29 @@ public class TecnicoService {
 		chamadoRepository.save(chamado);
 		return new ChamadoDTO(chamado);
 	}
-	
-	
+
+	@Transactional
+	public ChamadoDTO finalizarChamado(Long id, UUID idTecnico) {
+		Chamado chamado = chamadoRepository.findById(id)
+				.orElseThrow(() -> new ObjectNotFoundException("Chamado não encontrado"));
+		if (chamado.getTecnico() != null && !chamado.getTecnico().getId().equals(idTecnico)) {
+			throw new DataIntegratyViolationException("Somente o técnico associado pode finalizar este chamado aberto.");
+		}
+		chamado.setStatusChamado(StatusChamado.FECHADO);
+		chamado.setDataFechamento(LocalDateTime.now());
+		chamadoRepository.save(chamado);
+		return new ChamadoDTO(chamado);
+	}
+
 	protected void atribuirCargo(Tecnico cli, TecnicoDTO tecnicoDTO) {
 		cli.getCargos().clear();
 		for (CargoDTO car : tecnicoDTO.getCargos()) {
-			Cargo cargo = cargoRepository.findById(car.getId()).orElseThrow(
-					()-> new ObjectNotFoundException("Cargo não encontrado"));
-			cli.getCargos().add(cargo);		
-		}		
+			Cargo cargo = cargoRepository.findById(car.getId())
+					.orElseThrow(() -> new ObjectNotFoundException("Cargo não encontrado"));
+			cli.getCargos().add(cargo);
+		}
 	}
-	
+
 	protected void verificarEmailExistente(TecnicoDTO tecnicoDTO) {
 		Optional<Tecnico> entity = repository.findByEmail(tecnicoDTO.getEmail());
 		if (entity.isPresent() && !entity.get().getId().equals(tecnicoDTO.getId())) {

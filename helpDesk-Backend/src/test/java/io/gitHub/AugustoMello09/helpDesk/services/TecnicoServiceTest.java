@@ -45,6 +45,7 @@ public class TecnicoServiceTest {
 	private static final String EMAIL = "meuEmail@gmail.com";
 
 	private static final UUID ID = UUID.fromString("148cf4fc-b379-4e25-8bf4-f73feb06befa");
+	private static final UUID ID2 = UUID.fromString("151cf4fc-b379-4e25-8bf4-f73feb06befa");
 
 	private Optional<Tecnico> tecnicoOptional;
 
@@ -213,6 +214,59 @@ public class TecnicoServiceTest {
 		});
 		assertEquals("Técnico não encontrado", exception.getMessage());
 	}
+	
+	@DisplayName("Somente uma pessoa pode aceitar um chamado.")
+	@Test
+	public void shouldReturnEsteChamado() {
+		Cliente cl = new Cliente(ID, NOME, EMAIL);
+		Tecnico c2 = new Tecnico(ID, NOME, EMAIL);
+		Chamado ch1 = new Chamado(1L, null, EMAIL, null, StatusChamado.ANDAMENTO, c2, cl);
+		Tecnico c3 = new Tecnico(ID2, NOME, EMAIL);
+		when(chamadoRepository.findById(anyLong())).thenReturn(Optional.of(ch1));
+		DataIntegratyViolationException exception = assertThrows(DataIntegratyViolationException.class, () -> {
+			service.aceitarChamado(1L, c3.getId());
+		});
+		assertEquals("Este chamado já está em andamento e possui um técnico associado.", exception.getMessage());
+		
+	}
+	
+	@DisplayName("Deve finalizar o chamado.")
+	@Test
+	public void shouldFinishChamado() {
+		when(chamadoRepository.findById(anyLong())).thenReturn(chamadoOptional);
+		when(repository.findById(ID)).thenReturn(Optional.of(tecnico));
+		when(chamadoRepository.save(any(Chamado.class))).thenReturn(chamado);
+		var response = service.finalizarChamado(1L, ID);
+		assertNotNull(response);
+		verify(chamadoRepository, times(1)).save(any(Chamado.class));
+	}
+
+	@DisplayName("Não encontrar o chamado.")
+	@Test
+	public void shouldNotFoundChamado2() {
+		when(chamadoRepository.findById(anyLong())).thenReturn(Optional.empty());
+		ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> {
+			service.finalizarChamado(1L, ID);
+		});
+		assertEquals("Chamado não encontrado", exception.getMessage());
+	}
+	
+	@DisplayName("Somente o técnico associado pode encerrar o chamado.")
+	@Test
+	public void shouldReturnSomenteChamado() {
+		Cliente cl = new Cliente(ID, NOME, EMAIL);
+		Tecnico c2 = new Tecnico(ID, NOME, EMAIL);
+		Chamado ch1 = new Chamado(1L, null, EMAIL, null, StatusChamado.ANDAMENTO, c2, cl);
+		Tecnico c3 = new Tecnico(ID2, NOME, EMAIL);
+		when(chamadoRepository.findById(anyLong())).thenReturn(Optional.of(ch1));
+		DataIntegratyViolationException exception = assertThrows(DataIntegratyViolationException.class, () -> {
+			service.finalizarChamado(1L, c3.getId());
+		});
+		assertEquals("Somente o técnico associado pode finalizar este chamado aberto.", exception.getMessage());
+		
+	}
+	
+	
 
 	private void startTecnico() {
 		cliente = new Cliente(ID, NOME, EMAIL);

@@ -55,5 +55,12 @@ public class TecnicoController {
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
 		return ResponseEntity.created(uri).body(newObj);
 	}
+	
+	@PostMapping(value = "/finalizarChamado/{id}/tecnicoId/{idTecnico}")
+	public ResponseEntity<ChamadoDTO> finalizarChamado(@PathVariable Long id, @PathVariable UUID idTecnico) {
+		var newObj = service.finalizarChamado(id, idTecnico);
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
+		return ResponseEntity.created(uri).body(newObj);
+	}
 
 }

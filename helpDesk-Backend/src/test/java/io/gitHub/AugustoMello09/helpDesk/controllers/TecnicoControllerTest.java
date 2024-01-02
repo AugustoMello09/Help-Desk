@@ -23,7 +23,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.ClienteInfDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoInfDTO;
 import io.gitHub.AugustoMello09.helpDesk.services.TecnicoService;
 
 @AutoConfigureMockMvc
@@ -37,6 +40,12 @@ public class TecnicoControllerTest {
 	private static final UUID ID = UUID.fromString("148cf4fc-b379-4e25-8bf4-f73feb06befa");
 
 	private TecnicoDTO tecnicoDTO;
+	
+	private ChamadoDTO chamadoDTO;
+	
+	private TecnicoInfDTO tecnicoInfDTO;
+	
+	private ClienteInfDTO clienteInfDTO;
 
 	@Mock
 	private TecnicoService service;
@@ -101,9 +110,34 @@ public class TecnicoControllerTest {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().string("ok"));
 	}
+	
+	@DisplayName("Deve aceitar um chamado. ")
+	@Test
+	public void shouldAcceptChamado() {
+		when(service.aceitarChamado(1L, ID)).thenReturn(chamadoDTO);
+		var response = controller.aceitarChamado(1L, ID);
+		assertNotNull(response);
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(ResponseEntity.class, response.getClass());
+				
+	}
+	
+	@DisplayName("Deve finalizar um chamado. ")
+	@Test
+	public void shouldFinishChamado() {
+		when(service.finalizarChamado(1L, ID)).thenReturn(chamadoDTO);
+		var response = controller.finalizarChamado(1L, ID);
+		assertNotNull(response);
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertEquals(ResponseEntity.class, response.getClass());	
+	}
 
 	public void startTecnico() {
 		tecnicoDTO = new TecnicoDTO(ID, NOME, EMAIL);
+		tecnicoInfDTO = new TecnicoInfDTO(ID, NOME, EMAIL);
+		clienteInfDTO = new ClienteInfDTO(ID, NOME, EMAIL);
+		chamadoDTO = new ChamadoDTO(1L, null, EMAIL, null, null, clienteInfDTO, tecnicoInfDTO);
+		
 	}
 
 }
