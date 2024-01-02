@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ClienteDTO;
 import io.gitHub.AugustoMello09.helpDesk.services.ClienteService;
 
@@ -46,6 +47,19 @@ public class ClienteController {
 	public ResponseEntity<ClienteDTO> update(@RequestBody ClienteDTO dto,@PathVariable UUID id){
 		var newObj = service.updateEmail(dto, id);
 		return ResponseEntity.ok().body(newObj);
+	}
+	
+	@GetMapping(value = "/buscarChamado/{id}")
+	public ResponseEntity<ChamadoDTO> buscarChamado(@PathVariable Long id){
+		var response = service.buscarChamado(id);
+		return ResponseEntity.ok().body(response);
+	}
+	
+	@PostMapping(value = "/fazerChamado/{id}")
+	public ResponseEntity<ChamadoDTO> criarChamado(@RequestBody ChamadoDTO dto, @PathVariable UUID id){
+		var newObj = service.crairChamado(dto, id);
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
+		return ResponseEntity.created(uri).body(newObj);
 	}
 
 }

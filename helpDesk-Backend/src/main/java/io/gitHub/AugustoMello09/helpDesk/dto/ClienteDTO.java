@@ -26,8 +26,6 @@ public class ClienteDTO {
 		nome = entity.getNome();
 		email = entity.getEmail();
 		entity.getCargos().forEach(y -> this.cargos.add(new CargoDTO(y)));
-		entity.getChamados().forEach(x -> this.chamados.add(new ChamadoDTO(x)));
-
 	}
 
 	public ClienteDTO(UUID id, String nome, String email) {

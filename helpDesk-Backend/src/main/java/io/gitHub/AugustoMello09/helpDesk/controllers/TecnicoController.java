@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
 import io.gitHub.AugustoMello09.helpDesk.services.TecnicoService;
 
@@ -41,11 +42,18 @@ public class TecnicoController {
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
 		return ResponseEntity.created(uri).body(newObj);
 	}
-	
+
 	@PatchMapping(value = "/{id}")
-	public ResponseEntity<TecnicoDTO> update(@RequestBody TecnicoDTO dto,@PathVariable UUID id){
+	public ResponseEntity<TecnicoDTO> update(@RequestBody TecnicoDTO dto, @PathVariable UUID id) {
 		var newObj = service.updateEmail(dto, id);
 		return ResponseEntity.ok().body(newObj);
+	}
+
+	@PostMapping(value = "/aceitarChamado/{id}/tecnicoId/{idTecnico}")
+	public ResponseEntity<ChamadoDTO> aceitarChamado(@PathVariable Long id, @PathVariable UUID idTecnico) {
+		var newObj = service.aceitarChamado(id, idTecnico);
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
+		return ResponseEntity.created(uri).body(newObj);
 	}
 
 }

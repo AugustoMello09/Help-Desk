@@ -7,10 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.CargoDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
 import io.gitHub.AugustoMello09.helpDesk.entities.Cargo;
+import io.gitHub.AugustoMello09.helpDesk.entities.Chamado;
 import io.gitHub.AugustoMello09.helpDesk.entities.Tecnico;
+import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusChamado;
 import io.gitHub.AugustoMello09.helpDesk.repositories.CargoRepository;
+import io.gitHub.AugustoMello09.helpDesk.repositories.ChamadoRepository;
 import io.gitHub.AugustoMello09.helpDesk.repositories.TecnicoRepository;
 import io.gitHub.AugustoMello09.helpDesk.services.exceptions.DataIntegratyViolationException;
 import io.gitHub.AugustoMello09.helpDesk.services.exceptions.ObjectNotFoundException;
@@ -24,6 +28,9 @@ public class TecnicoService {
 	
 	@Autowired
 	private CargoRepository cargoRepository;
+	
+	@Autowired
+	private ChamadoRepository chamadoRepository;
 	
 	public TecnicoDTO findById(UUID id) {
 		Optional<Tecnico> cli = repository.findById(id);
@@ -51,6 +58,18 @@ public class TecnicoService {
 		entity.setEmail(tecnicoDTO.getEmail());
 		repository.save(entity);
 		return new TecnicoDTO(entity);
+	}
+	
+	@Transactional
+	public ChamadoDTO aceitarChamado(Long id, UUID idTecnico) {
+		Chamado chamado = chamadoRepository.findById(id)
+				.orElseThrow(() -> new ObjectNotFoundException("Chamado não encontrado"));
+		Tecnico tecnico = repository.findById(idTecnico)
+				.orElseThrow(() -> new ObjectNotFoundException("Técnico não encontrado"));
+		chamado.setTecnico(tecnico);
+		chamado.setStatusChamado(StatusChamado.ANDAMENTO);
+		chamadoRepository.save(chamado);
+		return new ChamadoDTO(chamado);
 	}
 	
 	

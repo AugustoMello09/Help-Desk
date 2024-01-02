@@ -16,23 +16,27 @@ public class ChamadoDTO {
 	private String descricao;
 	private LocalDateTime dataFechamento;
 	private StatusChamado statusChamado;
-	
-	private ClienteDTO cliente;
-	
+
+	private ClienteInfDTO cliente;
+	private TecnicoInfDTO tecnico;
+
 	public ChamadoDTO() {
-		
+
 	}
-	
+
 	public ChamadoDTO(Chamado entity) {
-		cliente = new ClienteDTO(entity.getCliente());
+		cliente = new ClienteInfDTO(entity.getCliente());
+		if (entity.getTecnico() != null) {
+			tecnico = new TecnicoInfDTO(entity.getTecnico());
+		} else {
+			tecnico = null;
+		}
 		id = entity.getId();
 		dataAberto = LocalDateTime.now();
 		descricao = entity.getDescricao();
 		dataFechamento = entity.getDataFechamento();
-		statusChamado = StatusChamado.ABERTO;
-		
+		statusChamado = entity.getStatusChamado();
+
 	}
-	
-	
 
 }
