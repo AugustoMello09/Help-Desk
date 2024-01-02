@@ -68,7 +68,7 @@ public class ClienteService {
 	}
 
 	@Transactional
-	public ChamadoDTO crairChamado(ChamadoDTO chamadoDTO, UUID id) {
+	public ChamadoDTO criarChamado(ChamadoDTO chamadoDTO, UUID id) {
 		Cliente cliente = repository.findById(id)
 				.orElseThrow(() -> new ObjectNotFoundException("Cliente não encontrado"));
 		Chamado chamado = new Chamado();

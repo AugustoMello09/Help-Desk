@@ -57,7 +57,7 @@ public class ClienteController {
 	
 	@PostMapping(value = "/fazerChamado/{id}")
 	public ResponseEntity<ChamadoDTO> criarChamado(@RequestBody ChamadoDTO dto, @PathVariable UUID id){
-		var newObj = service.crairChamado(dto, id);
+		var newObj = service.criarChamado(dto, id);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
 		return ResponseEntity.created(uri).body(newObj);
 	}

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,10 +25,17 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.CargoDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ClienteDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.ClienteInfDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoInfDTO;
 import io.gitHub.AugustoMello09.helpDesk.entities.Cargo;
+import io.gitHub.AugustoMello09.helpDesk.entities.Chamado;
 import io.gitHub.AugustoMello09.helpDesk.entities.Cliente;
+import io.gitHub.AugustoMello09.helpDesk.entities.Tecnico;
+import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusChamado;
 import io.gitHub.AugustoMello09.helpDesk.repositories.CargoRepository;
+import io.gitHub.AugustoMello09.helpDesk.repositories.ChamadoRepository;
 import io.gitHub.AugustoMello09.helpDesk.repositories.ClienteRepository;
 import io.gitHub.AugustoMello09.helpDesk.services.exceptions.DataIntegratyViolationException;
 import io.gitHub.AugustoMello09.helpDesk.services.exceptions.ObjectNotFoundException;
@@ -52,6 +60,21 @@ public class ClienteServiceTest {
 	private Optional<Cargo> cargoOptional;
 
 	private CargoDTO cargoDTO;
+	
+	private Chamado chamado;
+	
+	private ChamadoDTO chamadoDTO;
+	
+	private Optional<Chamado> chamadoOptional;
+	
+	private Tecnico tecnico;
+	
+	private TecnicoInfDTO tecnicoInfDTO;
+	
+	private ClienteInfDTO clienteInfDTO;
+	
+	@Mock
+	private ChamadoRepository chamadoRepository;
 
 	@Mock
 	private ClienteRepository repository;
@@ -167,8 +190,47 @@ public class ClienteServiceTest {
 		assertEquals("Cargo não encontrado", exception.getMessage());
 
 	}
+	
+	@DisplayName("Deve criar um chamado.")
+	@Test
+	public void shouldCreateChamado() {
+		when(chamadoRepository.save(any(Chamado.class))).thenReturn(chamado);
+		when(repository.findById(ID)).thenReturn(Optional.of(cliente));
+		var response = service.criarChamado(chamadoDTO, ID);
+		assertNotNull(response);
+		verify(chamadoRepository, times(1)).save(any(Chamado.class));
+	}
+	
+	@DisplayName("Deve lançar cliente não encontrado na hora que criar um chamado.")
+	@Test
+	public void shouldThrowClientNotFoundExceptionWhenClientNotFoundInChamadoCreation() {
+		when(repository.findById(ID)).thenReturn(Optional.empty());
+		ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> {
+			service.criarChamado(chamadoDTO, ID);
+		});
+		assertEquals("Cliente não encontrado", exception.getMessage());
+		
+	}
+	
+	@DisplayName("Deve retornar um Chamado com sucesso.")
+	@Test
+	public void shouldReturnAChamadoWithSuccess() {
+		when(chamadoRepository.findById(anyLong())).thenReturn(chamadoOptional);
+		var response = service.buscarChamado(1L);
+		assertNotNull(response);	
+	}
+
+	@DisplayName("Deve retornar Chamado não encontrado.")
+	@Test
+	public void shouldReturnChamadoNotFound() {
+		when(chamadoRepository.findById(anyLong())).thenReturn(Optional.empty());
+		assertThrows(ObjectNotFoundException.class, () -> service.buscarChamado(1L));
+	}
 
 	private void startCliente() {
+		tecnicoInfDTO = new TecnicoInfDTO(ID, NOME, EMAIL);
+		clienteInfDTO = new ClienteInfDTO(ID, NOME, EMAIL);
+		tecnico = new Tecnico(ID, NOME, EMAIL);
 		cliente = new Cliente(ID, NOME, EMAIL);
 		clienteDto = new ClienteDTO(ID, NOME, EMAIL);
 		clienteOptional = Optional.of(cliente);
@@ -179,6 +241,9 @@ public class ClienteServiceTest {
 		cliente.getCargos().add(cargo);
 		clienteDto.setCargos(new HashSet<>());
 		clienteDto.getCargos().add(cargoDTO);
+		chamado = new Chamado(1L, LocalDateTime.now(), "oi", null, StatusChamado.ABERTO, tecnico, cliente);
+		chamadoDTO = new ChamadoDTO(1L, LocalDateTime.now(), "oi", null, StatusChamado.ABERTO, clienteInfDTO, tecnicoInfDTO);
+		chamadoOptional = Optional.of(chamado);
 	}
 
 }

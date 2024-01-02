@@ -3,8 +3,10 @@ package io.gitHub.AugustoMello09.helpDesk.dto;
 import java.util.UUID;
 
 import io.gitHub.AugustoMello09.helpDesk.entities.Tecnico;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+@AllArgsConstructor
 @Data
 public class TecnicoInfDTO {
 	

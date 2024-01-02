@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,8 +27,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import io.gitHub.AugustoMello09.helpDesk.dto.CargoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
 import io.gitHub.AugustoMello09.helpDesk.entities.Cargo;
+import io.gitHub.AugustoMello09.helpDesk.entities.Chamado;
+import io.gitHub.AugustoMello09.helpDesk.entities.Cliente;
 import io.gitHub.AugustoMello09.helpDesk.entities.Tecnico;
+import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusChamado;
 import io.gitHub.AugustoMello09.helpDesk.repositories.CargoRepository;
+import io.gitHub.AugustoMello09.helpDesk.repositories.ChamadoRepository;
 import io.gitHub.AugustoMello09.helpDesk.repositories.TecnicoRepository;
 import io.gitHub.AugustoMello09.helpDesk.services.exceptions.DataIntegratyViolationException;
 import io.gitHub.AugustoMello09.helpDesk.services.exceptions.ObjectNotFoundException;
@@ -52,6 +57,15 @@ public class TecnicoServiceTest {
 	private Optional<Cargo> cargoOptional;
 
 	private CargoDTO cargoDTO;
+
+	private Chamado chamado;
+
+	private Cliente cliente;
+
+	private Optional<Chamado> chamadoOptional;
+
+	@Mock
+	private ChamadoRepository chamadoRepository;
 
 	@Mock
 	private TecnicoRepository repository;
@@ -168,7 +182,40 @@ public class TecnicoServiceTest {
 
 	}
 
+	@DisplayName("Deve aceitar o chamado.")
+	@Test
+	public void shuoldAcceptChamado() {
+		when(chamadoRepository.findById(anyLong())).thenReturn(chamadoOptional);
+		when(repository.findById(ID)).thenReturn(Optional.of(tecnico));
+		when(chamadoRepository.save(any(Chamado.class))).thenReturn(chamado);
+		var response = service.aceitarChamado(1L, ID);
+		assertNotNull(response);
+		verify(chamadoRepository, times(1)).save(any(Chamado.class));
+	}
+
+	@DisplayName("Não encontrar o chamado.")
+	@Test
+	public void shouldNotFoundChamado() {
+		when(chamadoRepository.findById(anyLong())).thenReturn(Optional.empty());
+		ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> {
+			service.aceitarChamado(1L, ID);
+		});
+		assertEquals("Chamado não encontrado", exception.getMessage());
+	}
+
+	@DisplayName("Não encontrar o Tecnico.")
+	@Test
+	public void shouldNotFoundTecnico() {
+		when(chamadoRepository.findById(anyLong())).thenReturn(Optional.of(chamado));
+		when(repository.findById(ID)).thenReturn(Optional.empty());
+		ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> {
+			service.aceitarChamado(1L, ID);
+		});
+		assertEquals("Técnico não encontrado", exception.getMessage());
+	}
+
 	private void startTecnico() {
+		cliente = new Cliente(ID, NOME, EMAIL);
 		tecnico = new Tecnico(ID, NOME, EMAIL);
 		tecnicoDto = new TecnicoDTO(ID, NOME, EMAIL);
 		tecnicoOptional = Optional.of(tecnico);
@@ -179,6 +226,8 @@ public class TecnicoServiceTest {
 		tecnico.getCargos().add(cargo);
 		tecnicoDto.setCargos(new HashSet<>());
 		tecnicoDto.getCargos().add(cargoDTO);
+		chamado = new Chamado(1L, LocalDateTime.now(), "oi", null, StatusChamado.ABERTO, tecnico, cliente);
+		chamadoOptional = Optional.of(chamado);
 	}
 
 }

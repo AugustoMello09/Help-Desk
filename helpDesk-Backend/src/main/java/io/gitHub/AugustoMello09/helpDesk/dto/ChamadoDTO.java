@@ -4,8 +4,10 @@ import java.time.LocalDateTime;
 
 import io.gitHub.AugustoMello09.helpDesk.entities.Chamado;
 import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusChamado;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+@AllArgsConstructor
 @Data
 public class ChamadoDTO {
 

@@ -3,9 +3,11 @@ package io.gitHub.AugustoMello09.helpDesk.controllers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +25,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ClienteDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.ClienteInfDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoInfDTO;
+import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusChamado;
+import io.gitHub.AugustoMello09.helpDesk.repositories.ChamadoRepository;
 import io.gitHub.AugustoMello09.helpDesk.services.ClienteService;
 
 @AutoConfigureMockMvc
@@ -37,6 +44,15 @@ public class ClienteControllerTest {
 	private static final UUID ID = UUID.fromString("148cf4fc-b379-4e25-8bf4-f73feb06befa");
 
 	private ClienteDTO clienteDTO;
+
+	private ChamadoDTO chamadoDTO;
+
+	private TecnicoInfDTO tecnicoInfDTO;
+
+	private ClienteInfDTO clienteInfDTO;
+
+	@Mock
+	private ChamadoRepository chamadoRepository;
 
 	@Mock
 	private ClienteService service;
@@ -93,17 +109,40 @@ public class ClienteControllerTest {
 		assertEquals(EMAIL, response.getBody().getEmail());
 		verify(service).updateEmail(clienteDTO, ID);
 	}
-	
+
 	@DisplayName("Deve retornar o status OK. ")
 	@Test
 	public void shouldReturnOkStatus() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/cliente"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
+		mockMvc.perform(MockMvcRequestBuilders.get("/cliente")).andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().string("ok"));
+	}
+	
+	@DisplayName("Deve retornar o Chamado. ")
+	@Test
+	public void shouldReturnChamado() {
+		when(service.buscarChamado(anyLong())).thenReturn(chamadoDTO);
+		var response = controller.buscarChamado(1L);
+		assertNotNull(response);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(ResponseEntity.class, response.getClass());	
+	}
+	
+	@DisplayName("Deve criar um chamado. ")
+	@Test
+	public void shouldCreateChamado() {
+		when(service.criarChamado(chamadoDTO, ID)).thenReturn(chamadoDTO);
+		var response = controller.criarChamado(chamadoDTO, ID);
+		assertNotNull(response);
+		assertEquals(ResponseEntity.class, response.getClass());
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 	}
 
 	public void startCliente() {
 		clienteDTO = new ClienteDTO(ID, NOME, EMAIL);
+		tecnicoInfDTO = new TecnicoInfDTO(ID, NOME, EMAIL);
+		clienteInfDTO = new ClienteInfDTO(ID, NOME, EMAIL);
+		chamadoDTO = new ChamadoDTO(1L, LocalDateTime.now(), "oi", null, StatusChamado.ABERTO, clienteInfDTO,
+				tecnicoInfDTO);
 	}
 
 }
