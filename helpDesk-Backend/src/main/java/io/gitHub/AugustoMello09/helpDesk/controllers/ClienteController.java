@@ -17,25 +17,30 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ClienteDTO;
 import io.gitHub.AugustoMello09.helpDesk.services.ClienteService;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+@Tag(name = "Help Desk Cliente endpoint")
 @RestController
 @RequestMapping(value = "cliente")
 public class ClienteController {
 
 	@Autowired
 	private ClienteService service;
-
+	
+	@Operation(summary = "Status.")
 	@GetMapping
 	public String status() {
 		return "ok";
 	}
 
+	@Operation(summary = "Busca um Cliente no banco de dados.")
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<ClienteDTO> findById(@PathVariable UUID id) {
 		var cliente = service.findById(id);
 		return ResponseEntity.ok().body(cliente);
 	}
-
+	
+	@Operation(summary = "Cria um Cliente no banco de dados.")
 	@PostMapping
 	public ResponseEntity<ClienteDTO> create(@RequestBody ClienteDTO dto) {
 		var newObj = service.create(dto);
@@ -43,18 +48,21 @@ public class ClienteController {
 		return ResponseEntity.created(uri).body(newObj);
 	}
 	
+	@Operation(summary = "Busca um Cliente no banco de dados e atualiza o email.")
 	@PatchMapping(value = "/{id}")
 	public ResponseEntity<ClienteDTO> update(@RequestBody ClienteDTO dto,@PathVariable UUID id){
 		var newObj = service.updateEmail(dto, id);
 		return ResponseEntity.ok().body(newObj);
 	}
 	
+	@Operation(summary = "Busca um chamado.")
 	@GetMapping(value = "/buscarChamado/{id}")
 	public ResponseEntity<ChamadoDTO> buscarChamado(@PathVariable Long id){
 		var response = service.buscarChamado(id);
 		return ResponseEntity.ok().body(response);
 	}
 	
+	@Operation(summary = "Cria um chamado.")
 	@PostMapping(value = "/fazerChamado/{id}")
 	public ResponseEntity<ChamadoDTO> criarChamado(@RequestBody ChamadoDTO dto, @PathVariable UUID id){
 		var newObj = service.criarChamado(dto, id);
