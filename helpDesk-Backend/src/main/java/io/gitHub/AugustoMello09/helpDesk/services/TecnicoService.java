@@ -5,22 +5,30 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailSendException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.CargoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.EmailDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
 import io.gitHub.AugustoMello09.helpDesk.entities.Cargo;
 import io.gitHub.AugustoMello09.helpDesk.entities.Chamado;
 import io.gitHub.AugustoMello09.helpDesk.entities.Tecnico;
 import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusChamado;
+import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusEmail;
 import io.gitHub.AugustoMello09.helpDesk.repositories.CargoRepository;
 import io.gitHub.AugustoMello09.helpDesk.repositories.ChamadoRepository;
 import io.gitHub.AugustoMello09.helpDesk.repositories.TecnicoRepository;
 import io.gitHub.AugustoMello09.helpDesk.services.exceptions.DataIntegratyViolationException;
 import io.gitHub.AugustoMello09.helpDesk.services.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class TecnicoService {
 
@@ -32,6 +40,12 @@ public class TecnicoService {
 
 	@Autowired
 	private ChamadoRepository chamadoRepository;
+	
+	@Autowired
+	private JavaMailSender emailSender;
+
+	@Value(value = "${spring.mail.username}")
+	private String emailFrom;
 
 	public TecnicoDTO findById(UUID id) {
 		Optional<Tecnico> cli = repository.findById(id);
@@ -71,7 +85,27 @@ public class TecnicoService {
 				.orElseThrow(() -> new ObjectNotFoundException("Técnico não encontrado"));
 		chamado.setTecnico(tecnico);
 		chamado.setStatusChamado(StatusChamado.ANDAMENTO);
-		chamadoRepository.save(chamado);
+		EmailDTO emailModel = new EmailDTO();
+	    emailModel.setSendDateEmail(LocalDateTime.now());
+	    emailModel.setEmailFrom(emailFrom);
+	    emailModel.setEmailTo(chamado.getCliente().getEmail());
+	    emailModel.setSubject("CHAMADO ACEITO");
+	    emailModel.setText(chamado.getCliente().getNome() + " Seu chamado foi aceito por " + tecnico.getNome() + " Chamado #" + chamado.getId());
+	    emailModel.setStatusEmail(StatusEmail.SENT);
+	    log.info("Email enviado com sucesso para: " + emailModel.getEmailTo());
+
+	    try {
+	        SimpleMailMessage message = new SimpleMailMessage();
+	        message.setTo(emailModel.getEmailTo());
+	        message.setSubject(emailModel.getSubject());
+	        message.setText(emailModel.getText());
+	        emailSender.send(message);
+	    } catch (MailSendException e) {
+	        emailModel.setStatusEmail(StatusEmail.ERROR);
+	        throw new DataIntegratyViolationException("Erro ao enviar o email. ");
+	    } finally {
+	    	chamadoRepository.save(chamado);
+		}
 		return new ChamadoDTO(chamado);
 	}
 
@@ -84,7 +118,26 @@ public class TecnicoService {
 		}
 		chamado.setStatusChamado(StatusChamado.FECHADO);
 		chamado.setDataFechamento(LocalDateTime.now());
-		chamadoRepository.save(chamado);
+		EmailDTO emailModel = new EmailDTO();
+	    emailModel.setSendDateEmail(LocalDateTime.now());
+	    emailModel.setEmailFrom(emailFrom);
+	    emailModel.setEmailTo(chamado.getCliente().getEmail());
+	    emailModel.setSubject("CHAMADO FINALIZADO");
+	    emailModel.setText(chamado.getCliente().getNome() + " Seu chamado foi finalizado, Obrigado(A) pela confiança.");
+	    emailModel.setStatusEmail(StatusEmail.SENT);
+	    log.info("Email enviado com sucesso para: " + emailModel.getEmailTo());
+	    try {
+	        SimpleMailMessage message = new SimpleMailMessage();
+	        message.setTo(emailModel.getEmailTo());
+	        message.setSubject(emailModel.getSubject());
+	        message.setText(emailModel.getText());
+	        emailSender.send(message);
+	    } catch (MailSendException e) {
+	        emailModel.setStatusEmail(StatusEmail.ERROR);
+	        throw new DataIntegratyViolationException("Erro ao enviar o email. ");
+	    } finally {
+	    	chamadoRepository.save(chamado);
+		}
 		return new ChamadoDTO(chamado);
 	}
 

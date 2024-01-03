@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,6 +24,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mail.MailSendException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.CargoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
@@ -73,6 +77,9 @@ public class TecnicoServiceTest {
 
 	@Mock
 	private CargoRepository cargoRepository;
+
+	@Mock
+	private JavaMailSender emailSender;
 
 	@InjectMocks
 	private TecnicoService service;
@@ -192,6 +199,7 @@ public class TecnicoServiceTest {
 		var response = service.aceitarChamado(1L, ID);
 		assertNotNull(response);
 		verify(chamadoRepository, times(1)).save(any(Chamado.class));
+		verify(emailSender, times(1)).send(any(SimpleMailMessage.class));
 	}
 
 	@DisplayName("Não encontrar o chamado.")
@@ -214,7 +222,7 @@ public class TecnicoServiceTest {
 		});
 		assertEquals("Técnico não encontrado", exception.getMessage());
 	}
-	
+
 	@DisplayName("Somente uma pessoa pode aceitar um chamado.")
 	@Test
 	public void shouldReturnEsteChamado() {
@@ -227,9 +235,9 @@ public class TecnicoServiceTest {
 			service.aceitarChamado(1L, c3.getId());
 		});
 		assertEquals("Este chamado já está em andamento e possui um técnico associado.", exception.getMessage());
-		
+
 	}
-	
+
 	@DisplayName("Deve finalizar o chamado.")
 	@Test
 	public void shouldFinishChamado() {
@@ -239,6 +247,7 @@ public class TecnicoServiceTest {
 		var response = service.finalizarChamado(1L, ID);
 		assertNotNull(response);
 		verify(chamadoRepository, times(1)).save(any(Chamado.class));
+		verify(emailSender, times(1)).send(any(SimpleMailMessage.class));
 	}
 
 	@DisplayName("Não encontrar o chamado.")
@@ -250,7 +259,7 @@ public class TecnicoServiceTest {
 		});
 		assertEquals("Chamado não encontrado", exception.getMessage());
 	}
-	
+
 	@DisplayName("Somente o técnico associado pode encerrar o chamado.")
 	@Test
 	public void shouldReturnSomenteChamado() {
@@ -263,10 +272,29 @@ public class TecnicoServiceTest {
 			service.finalizarChamado(1L, c3.getId());
 		});
 		assertEquals("Somente o técnico associado pode finalizar este chamado aberto.", exception.getMessage());
-		
+
+	}
+
+	@Test
+	public void shouldHandleEmailSendingError() {
+		 when(chamadoRepository.findById(anyLong())).thenReturn(Optional.of(chamado));
+		 when(repository.findById(ID)).thenReturn(Optional.of(tecnico));
+	    doThrow(new MailSendException("Erro ao enviar e-mail")).when(emailSender).send(any(SimpleMailMessage.class));
+	    assertThrows(DataIntegratyViolationException.class, () -> {
+	        service.aceitarChamado(1L, ID);
+	    });
 	}
 	
-	
+	@Test
+	public void shouldHandleEmailSendingErrorFinish() {
+		 when(chamadoRepository.findById(anyLong())).thenReturn(Optional.of(chamado));
+		 when(repository.findById(ID)).thenReturn(Optional.of(tecnico));
+	    doThrow(new MailSendException("Erro ao enviar e-mail")).when(emailSender).send(any(SimpleMailMessage.class));
+	    assertThrows(DataIntegratyViolationException.class, () -> {
+	        service.finalizarChamado(1L, ID);
+;	    });
+
+	}
 
 	private void startTecnico() {
 		cliente = new Cliente(ID, NOME, EMAIL);
