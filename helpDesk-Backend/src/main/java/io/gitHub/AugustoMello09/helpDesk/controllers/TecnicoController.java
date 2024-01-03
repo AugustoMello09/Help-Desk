@@ -1,6 +1,7 @@
 package io.gitHub.AugustoMello09.helpDesk.controllers;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
+import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusChamado;
 import io.gitHub.AugustoMello09.helpDesk.services.TecnicoService;
 
 @RestController
@@ -61,6 +63,12 @@ public class TecnicoController {
 		var newObj = service.finalizarChamado(id, idTecnico);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
 		return ResponseEntity.created(uri).body(newObj);
+	}
+	
+	@GetMapping(value = "/listaChamados/{status}")
+	public ResponseEntity<List<ChamadoDTO>> listaDeChamados(@PathVariable StatusChamado status){
+		List<ChamadoDTO> chamados = service.findAllChamados(status);
+		return ResponseEntity.ok().body(chamados);
 	}
 
 }

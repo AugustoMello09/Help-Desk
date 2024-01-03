@@ -13,7 +13,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -274,26 +276,39 @@ public class TecnicoServiceTest {
 		assertEquals("Somente o técnico associado pode finalizar este chamado aberto.", exception.getMessage());
 
 	}
-
+	
+	@DisplayName("Deve dar erro ao enviar o email ao aceitar o chamado.")
 	@Test
 	public void shouldHandleEmailSendingError() {
-		 when(chamadoRepository.findById(anyLong())).thenReturn(Optional.of(chamado));
-		 when(repository.findById(ID)).thenReturn(Optional.of(tecnico));
-	    doThrow(new MailSendException("Erro ao enviar e-mail")).when(emailSender).send(any(SimpleMailMessage.class));
-	    assertThrows(DataIntegratyViolationException.class, () -> {
-	        service.aceitarChamado(1L, ID);
-	    });
+		when(chamadoRepository.findById(anyLong())).thenReturn(Optional.of(chamado));
+		when(repository.findById(ID)).thenReturn(Optional.of(tecnico));
+		doThrow(new MailSendException("Erro ao enviar e-mail")).when(emailSender).send(any(SimpleMailMessage.class));
+		assertThrows(DataIntegratyViolationException.class, () -> {
+			service.aceitarChamado(1L, ID);
+		});
 	}
 	
+	@DisplayName("Deve dar erro ao enviar o email ao finalizar o chamado.")
 	@Test
 	public void shouldHandleEmailSendingErrorFinish() {
-		 when(chamadoRepository.findById(anyLong())).thenReturn(Optional.of(chamado));
-		 when(repository.findById(ID)).thenReturn(Optional.of(tecnico));
-	    doThrow(new MailSendException("Erro ao enviar e-mail")).when(emailSender).send(any(SimpleMailMessage.class));
-	    assertThrows(DataIntegratyViolationException.class, () -> {
-	        service.finalizarChamado(1L, ID);
-;	    });
+		when(chamadoRepository.findById(anyLong())).thenReturn(Optional.of(chamado));
+		when(repository.findById(ID)).thenReturn(Optional.of(tecnico));
+		doThrow(new MailSendException("Erro ao enviar e-mail")).when(emailSender).send(any(SimpleMailMessage.class));
+		assertThrows(DataIntegratyViolationException.class, () -> {
+			service.finalizarChamado(1L, ID);
+		});
 
+	}
+	
+	@DisplayName("Deve retornar a lista de chamados.")
+	@Test
+	public void shouldReturnListChamados() {
+		List<Chamado> cha = new ArrayList<>();
+		cha.add(chamado);
+		var status = StatusChamado.ABERTO;
+		when(chamadoRepository.findAll()).thenReturn(cha);
+		var response = service.findAllChamados(status);
+		assertNotNull(response);
 	}
 
 	private void startTecnico() {

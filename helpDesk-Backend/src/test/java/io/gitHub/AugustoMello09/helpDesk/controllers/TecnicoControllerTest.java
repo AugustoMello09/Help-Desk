@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +29,7 @@ import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ClienteInfDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoInfDTO;
+import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusChamado;
 import io.gitHub.AugustoMello09.helpDesk.services.TecnicoService;
 
 @AutoConfigureMockMvc
@@ -131,13 +134,27 @@ public class TecnicoControllerTest {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertEquals(ResponseEntity.class, response.getClass());	
 	}
+	
+	@DisplayName("Deve retornar uma lista de chamados. ")
+	@Test
+	public void shouldReturnListChamados() {
+		List<ChamadoDTO> chamadosLista = new ArrayList<>();
+		chamadosLista.add(chamadoDTO);
+		var status = StatusChamado.ABERTO;
+		when(service.findAllChamados(status)).thenReturn(chamadosLista);
+		var response = controller.listaDeChamados(status);
+		assertNotNull(response);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(ResponseEntity.class, response.getClass());	
+	}
 
 	public void startTecnico() {
 		tecnicoDTO = new TecnicoDTO(ID, NOME, EMAIL);
 		tecnicoInfDTO = new TecnicoInfDTO(ID, NOME, EMAIL);
 		clienteInfDTO = new ClienteInfDTO(ID, NOME, EMAIL);
-		chamadoDTO = new ChamadoDTO(1L, null, EMAIL, null, null, clienteInfDTO, tecnicoInfDTO);
-		
+		chamadoDTO = new ChamadoDTO(1L, null, EMAIL, null, StatusChamado.ABERTO, clienteInfDTO, tecnicoInfDTO);
+		List<ChamadoDTO> chamadosLista = new ArrayList<>();
+		chamadosLista.add(chamadoDTO);
 	}
 
 }

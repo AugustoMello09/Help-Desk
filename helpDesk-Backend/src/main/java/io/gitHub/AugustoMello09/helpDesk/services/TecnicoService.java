@@ -1,8 +1,10 @@
 package io.gitHub.AugustoMello09.helpDesk.services;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -140,6 +142,14 @@ public class TecnicoService {
 		}
 		return new ChamadoDTO(chamado);
 	}
+	
+	public List<ChamadoDTO> findAllChamados(StatusChamado status){
+		List<Chamado> chamados = chamadoRepository.findAll()
+				.stream().filter(cham -> cham.getStatusChamado().equals(status))
+				.collect(Collectors.toList());
+		return chamados.stream().map(ChamadoDTO::new).collect(Collectors.toList());
+	}
+	
 
 	protected void atribuirCargo(Tecnico cli, TecnicoDTO tecnicoDTO) {
 		cli.getCargos().clear();
