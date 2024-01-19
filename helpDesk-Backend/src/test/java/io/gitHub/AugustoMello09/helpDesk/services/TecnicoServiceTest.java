@@ -305,9 +305,8 @@ public class TecnicoServiceTest {
 	public void shouldReturnListChamados() {
 		List<Chamado> cha = new ArrayList<>();
 		cha.add(chamado);
-		var status = StatusChamado.ABERTO;
 		when(chamadoRepository.findAll()).thenReturn(cha);
-		var response = service.findAllChamados(status);
+		var response = service.findAllChamados();
 		assertNotNull(response);
 	}
 

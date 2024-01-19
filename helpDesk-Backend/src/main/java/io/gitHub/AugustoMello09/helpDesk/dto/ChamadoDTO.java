@@ -2,6 +2,8 @@ package io.gitHub.AugustoMello09.helpDesk.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.gitHub.AugustoMello09.helpDesk.entities.Chamado;
 import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusChamado;
 import lombok.AllArgsConstructor;
@@ -12,10 +14,13 @@ import lombok.Data;
 public class ChamadoDTO {
 
 	private Long id;
-
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDateTime dataAberto;
 
 	private String descricao;
+	
+	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDateTime dataFechamento;
 	private StatusChamado statusChamado;
 

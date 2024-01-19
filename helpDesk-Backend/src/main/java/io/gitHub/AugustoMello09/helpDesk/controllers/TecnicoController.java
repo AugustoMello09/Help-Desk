@@ -1,11 +1,13 @@
 package io.gitHub.AugustoMello09.helpDesk.controllers;
 
 import java.net.URI;
+
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,10 +19,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
-import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusChamado;
 import io.gitHub.AugustoMello09.helpDesk.services.TecnicoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+@CrossOrigin("*")
 @Tag(name = "Help Desk Técnico endpoint")
 @RestController
 @RequestMapping(value = "tecnico")
@@ -74,9 +77,9 @@ public class TecnicoController {
 	}
 	
 	@Operation(summary = "Busca os chamados em aberto, andamento e finalizados")
-	@GetMapping(value = "/listaChamados/{status}")
-	public ResponseEntity<List<ChamadoDTO>> listaDeChamados(@PathVariable StatusChamado status){
-		List<ChamadoDTO> chamados = service.findAllChamados(status);
+	@GetMapping(value = "/listaChamados")
+	public ResponseEntity<List<ChamadoDTO>> listaDeChamados(){
+		List<ChamadoDTO> chamados = service.findAllChamados();
 		return ResponseEntity.ok().body(chamados);
 	}
 

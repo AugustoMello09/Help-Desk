@@ -1,10 +1,12 @@
 package io.gitHub.AugustoMello09.helpDesk.controllers;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +21,9 @@ import io.gitHub.AugustoMello09.helpDesk.dto.ClienteDTO;
 import io.gitHub.AugustoMello09.helpDesk.services.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+
+@CrossOrigin("*")
 @Tag(name = "Help Desk Cliente endpoint")
 @RestController
 @RequestMapping(value = "cliente")
@@ -68,6 +73,12 @@ public class ClienteController {
 		var newObj = service.criarChamado(dto, id);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
 		return ResponseEntity.created(uri).body(newObj);
+	}
+	
+	@GetMapping(value = "/meusChamados/{nome}")
+	public ResponseEntity<List<ChamadoDTO>> meusChamados(@PathVariable String nome) {
+		List<ChamadoDTO> lista = service.findAllMeuChamados(nome);
+		return ResponseEntity.ok().body(lista);
 	}
 
 }

@@ -1,8 +1,10 @@
 package io.gitHub.AugustoMello09.helpDesk.services;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,6 +80,13 @@ public class ClienteService {
 		chamado.setStatusChamado(StatusChamado.ABERTO);
 		chamadoRepository.save(chamado);
 		return new ChamadoDTO(chamado);
+	}
+	
+	public List<ChamadoDTO> findAllMeuChamados(String nome){
+		List<Chamado> chamados = chamadoRepository.findAll()
+				.stream().filter(x -> x.getCliente().getNome().equals(nome))
+				.collect(Collectors.toList());
+		return chamados.stream().map(ChamadoDTO::new).collect(Collectors.toList());
 	}
 
 	protected void atribuirCargo(Cliente cli, ClienteDTO clienteDTO) {

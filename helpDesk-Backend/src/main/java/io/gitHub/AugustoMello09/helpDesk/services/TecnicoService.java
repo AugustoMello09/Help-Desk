@@ -143,10 +143,8 @@ public class TecnicoService {
 		return new ChamadoDTO(chamado);
 	}
 	
-	public List<ChamadoDTO> findAllChamados(StatusChamado status){
-		List<Chamado> chamados = chamadoRepository.findAll()
-				.stream().filter(cham -> cham.getStatusChamado().equals(status))
-				.collect(Collectors.toList());
+	public List<ChamadoDTO> findAllChamados(){
+		List<Chamado> chamados = chamadoRepository.findAll();
 		return chamados.stream().map(ChamadoDTO::new).collect(Collectors.toList());
 	}
 	

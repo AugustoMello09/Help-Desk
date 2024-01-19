@@ -140,9 +140,8 @@ public class TecnicoControllerTest {
 	public void shouldReturnListChamados() {
 		List<ChamadoDTO> chamadosLista = new ArrayList<>();
 		chamadosLista.add(chamadoDTO);
-		var status = StatusChamado.ABERTO;
-		when(service.findAllChamados(status)).thenReturn(chamadosLista);
-		var response = controller.listaDeChamados(status);
+		when(service.findAllChamados()).thenReturn(chamadosLista);
+		var response = controller.listaDeChamados();
 		assertNotNull(response);
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertEquals(ResponseEntity.class, response.getClass());	
