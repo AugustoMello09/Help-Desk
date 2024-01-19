@@ -12,7 +12,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,6 +44,8 @@ import io.gitHub.AugustoMello09.helpDesk.services.exceptions.ObjectNotFoundExcep
 
 @SpringBootTest
 public class ClienteServiceTest {
+
+	private static final int INDEX = 0;
 
 	private static final String NOME = "José";
 
@@ -225,6 +229,17 @@ public class ClienteServiceTest {
 	public void shouldReturnChamadoNotFound() {
 		when(chamadoRepository.findById(anyLong())).thenReturn(Optional.empty());
 		assertThrows(ObjectNotFoundException.class, () -> service.buscarChamado(1L));
+	}
+	
+	@DisplayName("Deve retornar somente os Chamado do usuario.")
+	@Test
+	public void shouldReturnChamado() {
+		List<Chamado> chamados = Arrays.asList(new Chamado(1L, LocalDateTime.now(), "oi", null, StatusChamado.ABERTO, tecnico, cliente));
+		when(chamadoRepository.findAll()).thenReturn(chamados);
+		var response = service.findAllMeuChamados(NOME);
+		assertNotNull(response);
+		assertEquals(NOME, response.get(INDEX).getCliente().getNome());
+		assertEquals(EMAIL, response.get(INDEX).getCliente().getEmail());		
 	}
 
 	private void startCliente() {

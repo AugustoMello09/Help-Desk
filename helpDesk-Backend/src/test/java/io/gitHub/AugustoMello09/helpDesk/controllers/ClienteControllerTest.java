@@ -8,6 +8,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -135,6 +137,17 @@ public class ClienteControllerTest {
 		assertNotNull(response);
 		assertEquals(ResponseEntity.class, response.getClass());
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+	}
+	
+	@DisplayName("Deve retornar uma List chamado. ")
+	@Test
+	public void shouldReturnListChamadoDTO() {
+		List<ChamadoDTO> chamdosDTO = new ArrayList<>();
+		when(service.findAllMeuChamados(NOME)).thenReturn(chamdosDTO);
+		var response = controller.meusChamados(NOME);
+		assertNotNull(response);
+		assertEquals(ResponseEntity.class, response.getClass());
+		assertEquals(HttpStatus.OK, response.getStatusCode());		
 	}
 
 	public void startCliente() {
