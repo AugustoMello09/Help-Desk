@@ -22,8 +22,8 @@ public class Cliente extends Usuario{
 	@OneToMany(mappedBy = "cliente")
 	private List<Chamado> chamados = new ArrayList<>();
 
-	public Cliente(UUID id, String nome, String email) {
-		super(id, nome, email);
+	public Cliente(UUID id, String nome, String email, String senha) {
+		super(id, nome, email, senha);
 	}
 
 	

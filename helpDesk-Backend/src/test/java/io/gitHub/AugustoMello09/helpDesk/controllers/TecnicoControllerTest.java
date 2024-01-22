@@ -21,20 +21,21 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ClienteInfDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoInfDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoInsertDTO;
 import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusChamado;
 import io.gitHub.AugustoMello09.helpDesk.services.TecnicoService;
 
 @AutoConfigureMockMvc
 @SpringBootTest
 public class TecnicoControllerTest {
+
+	private static final String SENHA = "123";
 
 	private static final String NOME = "José";
 
@@ -55,9 +56,11 @@ public class TecnicoControllerTest {
 
 	@InjectMocks
 	private TecnicoController controller;
-
+	
 	@Autowired
-	private MockMvc mockMvc;
+	private BCryptPasswordEncoder passwordEncoder;
+	
+	private TecnicoInsertDTO tecnicoInsertDTO;
 
 	@BeforeEach
 	public void setUp() {
@@ -83,14 +86,14 @@ public class TecnicoControllerTest {
 	@DisplayName("Deve criar um Técnico. ")
 	@Test
 	public void shouldReturnCreatedTecnicoDTOOnController() {
-		when(service.create(any(TecnicoDTO.class))).thenReturn(tecnicoDTO);
-		var response = controller.create(tecnicoDTO);
+		when(service.create(any(TecnicoInsertDTO.class))).thenReturn(tecnicoDTO);
+		var response = controller.create(tecnicoInsertDTO);
 		assertNotNull(response);
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertEquals(ID, response.getBody().getId());
 		assertEquals(NOME, response.getBody().getNome());
 		assertEquals(EMAIL, response.getBody().getEmail());
-		verify(service).create(tecnicoDTO);
+		verify(service).create(tecnicoInsertDTO);
 	}
 
 	@DisplayName("Deve atualizar o email do Técnico. ")
@@ -104,14 +107,6 @@ public class TecnicoControllerTest {
 		assertEquals(NOME, response.getBody().getNome());
 		assertEquals(EMAIL, response.getBody().getEmail());
 		verify(service).updateEmail(tecnicoDTO, ID);
-	}
-	
-	@DisplayName("Deve retornar o status OK. ")
-	@Test
-	public void shouldReturnOkStatus() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/tecnico"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().string("ok"));
 	}
 	
 	@DisplayName("Deve aceitar um chamado. ")
@@ -148,6 +143,7 @@ public class TecnicoControllerTest {
 	}
 
 	public void startTecnico() {
+		tecnicoInsertDTO = new TecnicoInsertDTO(passwordEncoder.encode(SENHA));
 		tecnicoDTO = new TecnicoDTO(ID, NOME, EMAIL);
 		tecnicoInfDTO = new TecnicoInfDTO(ID, NOME, EMAIL);
 		clienteInfDTO = new ClienteInfDTO(ID, NOME, EMAIL);

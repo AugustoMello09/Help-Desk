@@ -22,8 +22,8 @@ public class Tecnico extends Usuario {
 	@OneToMany(mappedBy = "tecnico")
 	private List<Chamado> chamados = new ArrayList<>();
 
-	public Tecnico(UUID id, String nome, String email) {
-		super(id, nome, email);
+	public Tecnico(UUID id, String nome, String email, String senha) {
+		super(id, nome, email, senha);
 	}
 
 }

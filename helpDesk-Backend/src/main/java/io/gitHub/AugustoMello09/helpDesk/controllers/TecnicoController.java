@@ -19,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoInsertDTO;
 import io.gitHub.AugustoMello09.helpDesk.services.TecnicoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,7 +48,7 @@ public class TecnicoController {
 	
 	@Operation(summary = "Cria um técnico no banco de dados.")
 	@PostMapping
-	public ResponseEntity<TecnicoDTO> create(@RequestBody TecnicoDTO dto) {
+	public ResponseEntity<TecnicoDTO> create(@RequestBody TecnicoInsertDTO dto) {
 		var newObj = service.create(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
 		return ResponseEntity.created(uri).body(newObj);

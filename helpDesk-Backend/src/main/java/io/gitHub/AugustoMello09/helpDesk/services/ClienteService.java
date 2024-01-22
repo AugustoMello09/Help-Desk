@@ -7,11 +7,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.CargoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ClienteDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.ClienteInsertDTO;
 import io.gitHub.AugustoMello09.helpDesk.entities.Cargo;
 import io.gitHub.AugustoMello09.helpDesk.entities.Chamado;
 import io.gitHub.AugustoMello09.helpDesk.entities.Cliente;
@@ -34,6 +36,9 @@ public class ClienteService {
 	
 	@Autowired
 	private ChamadoRepository chamadoRepository;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 
 	public ClienteDTO findById(UUID id) {
 		Optional<Cliente> cli = repository.findById(id);
@@ -42,12 +47,13 @@ public class ClienteService {
 	}
 
 	@Transactional
-	public ClienteDTO create(ClienteDTO clienteDTO) {
+	public ClienteDTO create(ClienteInsertDTO clienteDTO) {
 		Cliente entity = new Cliente();
 		entity.setNome(clienteDTO.getNome());
 		verificarEmailExistente(clienteDTO);
 		entity.setEmail(clienteDTO.getEmail());
 		atribuirCargo(entity, clienteDTO);
+		entity.setSenha(passwordEncoder.encode(clienteDTO.getSenha()));
 		repository.save(entity);
 		return new ClienteDTO(entity);
 	}

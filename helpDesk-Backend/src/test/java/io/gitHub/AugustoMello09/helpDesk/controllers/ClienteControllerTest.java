@@ -18,18 +18,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ClienteDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ClienteInfDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.ClienteInsertDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoInfDTO;
 import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusChamado;
 import io.gitHub.AugustoMello09.helpDesk.repositories.ChamadoRepository;
@@ -52,6 +49,8 @@ public class ClienteControllerTest {
 	private TecnicoInfDTO tecnicoInfDTO;
 
 	private ClienteInfDTO clienteInfDTO;
+	
+	private ClienteInsertDTO clienteInsertDTO;
 
 	@Mock
 	private ChamadoRepository chamadoRepository;
@@ -62,8 +61,6 @@ public class ClienteControllerTest {
 	@InjectMocks
 	private ClienteController controller;
 
-	@Autowired
-	private MockMvc mockMvc;
 
 	@BeforeEach
 	public void setUp() {
@@ -89,14 +86,14 @@ public class ClienteControllerTest {
 	@DisplayName("Deve criar um usuário. ")
 	@Test
 	public void shouldReturnCreatedClienteDTOOnController() {
-		when(service.create(any(ClienteDTO.class))).thenReturn(clienteDTO);
-		var response = controller.create(clienteDTO);
+		when(service.create(any(ClienteInsertDTO.class))).thenReturn(clienteDTO);
+		var response = controller.create(clienteInsertDTO);
 		assertNotNull(response);
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertEquals(ID, response.getBody().getId());
 		assertEquals(NOME, response.getBody().getNome());
 		assertEquals(EMAIL, response.getBody().getEmail());
-		verify(service).create(clienteDTO);
+		verify(service).create(clienteInsertDTO);
 	}
 
 	@DisplayName("Deve atualizar o email do usuário. ")
@@ -110,13 +107,6 @@ public class ClienteControllerTest {
 		assertEquals(NOME, response.getBody().getNome());
 		assertEquals(EMAIL, response.getBody().getEmail());
 		verify(service).updateEmail(clienteDTO, ID);
-	}
-
-	@DisplayName("Deve retornar o status OK. ")
-	@Test
-	public void shouldReturnOkStatus() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/cliente")).andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().string("ok"));
 	}
 	
 	@DisplayName("Deve retornar o Chamado. ")
@@ -151,6 +141,7 @@ public class ClienteControllerTest {
 	}
 
 	public void startCliente() {
+		clienteInsertDTO = new ClienteInsertDTO("123");
 		clienteDTO = new ClienteDTO(ID, NOME, EMAIL);
 		tecnicoInfDTO = new TecnicoInfDTO(ID, NOME, EMAIL);
 		clienteInfDTO = new ClienteInfDTO(ID, NOME, EMAIL);

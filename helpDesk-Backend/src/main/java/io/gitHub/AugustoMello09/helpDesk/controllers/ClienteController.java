@@ -18,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ClienteDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.ClienteInsertDTO;
 import io.gitHub.AugustoMello09.helpDesk.services.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,7 +48,7 @@ public class ClienteController {
 	
 	@Operation(summary = "Cria um Cliente no banco de dados.")
 	@PostMapping
-	public ResponseEntity<ClienteDTO> create(@RequestBody ClienteDTO dto) {
+	public ResponseEntity<ClienteDTO> create(@RequestBody ClienteInsertDTO dto) {
 		var newObj = service.create(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
 		return ResponseEntity.created(uri).body(newObj);

@@ -11,12 +11,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.CargoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.EmailDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoInsertDTO;
 import io.gitHub.AugustoMello09.helpDesk.entities.Cargo;
 import io.gitHub.AugustoMello09.helpDesk.entities.Chamado;
 import io.gitHub.AugustoMello09.helpDesk.entities.Tecnico;
@@ -45,6 +47,9 @@ public class TecnicoService {
 	
 	@Autowired
 	private JavaMailSender emailSender;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 
 	@Value(value = "${spring.mail.username}")
 	private String emailFrom;
@@ -56,10 +61,11 @@ public class TecnicoService {
 	}
 
 	@Transactional
-	public TecnicoDTO create(TecnicoDTO tecnicoDTO) {
+	public TecnicoDTO create(TecnicoInsertDTO tecnicoDTO) {
 		Tecnico entity = new Tecnico();
 		entity.setNome(tecnicoDTO.getNome());
 		verificarEmailExistente(tecnicoDTO);
+		entity.setSenha(passwordEncoder.encode(tecnicoDTO.getSenha()));
 		entity.setEmail(tecnicoDTO.getEmail());
 		atribuirCargo(entity, tecnicoDTO);
 		repository.save(entity);

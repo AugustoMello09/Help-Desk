@@ -38,6 +38,8 @@ public abstract class Usuario implements Serializable {
 	
 	@Column(unique = true)
 	private String email;
+	
+	private String senha;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "tb_usuario_cargo", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "cargo_id"))
@@ -46,11 +48,12 @@ public abstract class Usuario implements Serializable {
 	public Usuario() {
 	}
 
-	public Usuario(UUID id, String nome, String email) {
+	public Usuario(UUID id, String nome, String email, String senha) {
 		super();
 		this.id = id;
 		this.nome = nome;
 		this.email = email;
+		this.senha = senha;
 	}
 
 }

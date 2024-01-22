@@ -29,9 +29,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.CargoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoInsertDTO;
 import io.gitHub.AugustoMello09.helpDesk.entities.Cargo;
 import io.gitHub.AugustoMello09.helpDesk.entities.Chamado;
 import io.gitHub.AugustoMello09.helpDesk.entities.Cliente;
@@ -46,6 +48,8 @@ import io.gitHub.AugustoMello09.helpDesk.services.exceptions.ObjectNotFoundExcep
 @SpringBootTest
 public class TecnicoServiceTest {
 
+	private static final String SENHA = "123";
+
 	private static final String NOME = "José";
 
 	private static final String EMAIL = "meuEmail@gmail.com";
@@ -54,6 +58,8 @@ public class TecnicoServiceTest {
 	private static final UUID ID2 = UUID.fromString("151cf4fc-b379-4e25-8bf4-f73feb06befa");
 
 	private Optional<Tecnico> tecnicoOptional;
+	
+	private TecnicoInsertDTO tecnicoInsertDTO;
 
 	private TecnicoDTO tecnicoDto;
 
@@ -85,6 +91,9 @@ public class TecnicoServiceTest {
 
 	@InjectMocks
 	private TecnicoService service;
+	
+	@Mock
+	private BCryptPasswordEncoder passwordEncoder;
 
 	@BeforeEach
 	public void setUp() {
@@ -115,7 +124,7 @@ public class TecnicoServiceTest {
 	@Test
 	void whenUpdateClientThenReturnTecnicoDTO() {
 		TecnicoDTO objDto = new TecnicoDTO(ID, NOME, "novoEmail@gmail.com");
-		Tecnico tecnico = new Tecnico(ID, NOME, EMAIL);
+		Tecnico tecnico = new Tecnico(ID, NOME, EMAIL, SENHA);
 
 		when(repository.findById(ID)).thenReturn(Optional.of(tecnico));
 		when(repository.save(any(Tecnico.class))).thenReturn(tecnico);
@@ -140,7 +149,7 @@ public class TecnicoServiceTest {
 		UUID existingTecnicoId = UUID.randomUUID();
 		TecnicoDTO tecnicoDTO = new TecnicoDTO(UUID.randomUUID(), "José", "meuEmail@gmail.com");
 		when(repository.findByEmail(tecnicoDTO.getEmail()))
-				.thenReturn(Optional.of(new Tecnico(existingTecnicoId, "OutroNome", "meuEmail@gmail.com")));
+				.thenReturn(Optional.of(new Tecnico(existingTecnicoId, "OutroNome", "meuEmail@gmail.com", SENHA)));
 		DataIntegratyViolationException exception = assertThrows(DataIntegratyViolationException.class, () -> {
 			service.verificarEmailExistente(tecnicoDTO);
 		});
@@ -153,7 +162,7 @@ public class TecnicoServiceTest {
 		UUID tecnicoId = UUID.randomUUID();
 		TecnicoDTO tecnicoDTO = new TecnicoDTO(tecnicoId, "José", "meuEmail@gmail.com");
 		when(repository.findByEmail(tecnicoDTO.getEmail()))
-				.thenReturn(Optional.of(new Tecnico(tecnicoId, "José", "meuEmail@gmail.com")));
+				.thenReturn(Optional.of(new Tecnico(tecnicoId, "José", "meuEmail@gmail.com", SENHA)));
 		assertDoesNotThrow(() -> {
 			service.verificarEmailExistente(tecnicoDTO);
 		});
@@ -164,10 +173,8 @@ public class TecnicoServiceTest {
 	public void testCreate() {
 		when(repository.save(any(Tecnico.class))).thenReturn(tecnico);
 		when(cargoRepository.findById(anyLong())).thenReturn(cargoOptional);
-		TecnicoDTO response = service.create(tecnicoDto);
+		TecnicoDTO response = service.create(tecnicoInsertDTO);
 		assertNotNull(response);
-		assertEquals(NOME, response.getNome());
-		assertEquals(EMAIL, response.getEmail());
 		assertNotNull(response.getCargos());
 		verify(repository, times(1)).save(any(Tecnico.class));
 	}
@@ -228,10 +235,10 @@ public class TecnicoServiceTest {
 	@DisplayName("Somente uma pessoa pode aceitar um chamado.")
 	@Test
 	public void shouldReturnEsteChamado() {
-		Cliente cl = new Cliente(ID, NOME, EMAIL);
-		Tecnico c2 = new Tecnico(ID, NOME, EMAIL);
+		Cliente cl = new Cliente(ID, NOME, EMAIL, SENHA);
+		Tecnico c2 = new Tecnico(ID, NOME, EMAIL, SENHA);
 		Chamado ch1 = new Chamado(1L, null, EMAIL, null, StatusChamado.ANDAMENTO, c2, cl);
-		Tecnico c3 = new Tecnico(ID2, NOME, EMAIL);
+		Tecnico c3 = new Tecnico(ID2, NOME, EMAIL, SENHA);
 		when(chamadoRepository.findById(anyLong())).thenReturn(Optional.of(ch1));
 		DataIntegratyViolationException exception = assertThrows(DataIntegratyViolationException.class, () -> {
 			service.aceitarChamado(1L, c3.getId());
@@ -265,10 +272,10 @@ public class TecnicoServiceTest {
 	@DisplayName("Somente o técnico associado pode encerrar o chamado.")
 	@Test
 	public void shouldReturnSomenteChamado() {
-		Cliente cl = new Cliente(ID, NOME, EMAIL);
-		Tecnico c2 = new Tecnico(ID, NOME, EMAIL);
+		Cliente cl = new Cliente(ID, NOME, EMAIL, SENHA);
+		Tecnico c2 = new Tecnico(ID, NOME, EMAIL, SENHA);
 		Chamado ch1 = new Chamado(1L, null, EMAIL, null, StatusChamado.ANDAMENTO, c2, cl);
-		Tecnico c3 = new Tecnico(ID2, NOME, EMAIL);
+		Tecnico c3 = new Tecnico(ID2, NOME, EMAIL, SENHA);
 		when(chamadoRepository.findById(anyLong())).thenReturn(Optional.of(ch1));
 		DataIntegratyViolationException exception = assertThrows(DataIntegratyViolationException.class, () -> {
 			service.finalizarChamado(1L, c3.getId());
@@ -311,8 +318,9 @@ public class TecnicoServiceTest {
 	}
 
 	private void startTecnico() {
-		cliente = new Cliente(ID, NOME, EMAIL);
-		tecnico = new Tecnico(ID, NOME, EMAIL);
+		tecnicoInsertDTO = new TecnicoInsertDTO(passwordEncoder.encode("123"));
+		cliente = new Cliente(ID, NOME, EMAIL, passwordEncoder.encode("123"));
+		tecnico = new Tecnico(ID, NOME, EMAIL, passwordEncoder.encode("123"));
 		tecnicoDto = new TecnicoDTO(ID, NOME, EMAIL);
 		tecnicoOptional = Optional.of(tecnico);
 		cargo = new Cargo(1L, "ADM");

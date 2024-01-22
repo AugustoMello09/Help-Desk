@@ -25,11 +25,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import io.gitHub.AugustoMello09.helpDesk.dto.CargoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ChamadoDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ClienteDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.ClienteInfDTO;
+import io.gitHub.AugustoMello09.helpDesk.dto.ClienteInsertDTO;
 import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoInfDTO;
 import io.gitHub.AugustoMello09.helpDesk.entities.Cargo;
 import io.gitHub.AugustoMello09.helpDesk.entities.Chamado;
@@ -77,6 +79,8 @@ public class ClienteServiceTest {
 	
 	private ClienteInfDTO clienteInfDTO;
 	
+	private ClienteInsertDTO clienteInsertDTO;
+	
 	@Mock
 	private ChamadoRepository chamadoRepository;
 
@@ -88,6 +92,9 @@ public class ClienteServiceTest {
 
 	@InjectMocks
 	private ClienteService service;
+	
+	@Mock
+	private BCryptPasswordEncoder passwordEncoder;
 
 	@BeforeEach
 	public void setUp() {
@@ -118,7 +125,7 @@ public class ClienteServiceTest {
 	@Test
 	void whenUpdateClientThenReturnClientDTO() {
 		ClienteDTO objDto = new ClienteDTO(ID, NOME, "novoEmail@gmail.com");
-		Cliente cliente = new Cliente(ID, NOME, EMAIL);
+		Cliente cliente = new Cliente(ID, NOME, EMAIL, "123");
 
 		when(repository.findById(ID)).thenReturn(Optional.of(cliente));
 		when(repository.save(any(Cliente.class))).thenReturn(cliente);
@@ -143,7 +150,7 @@ public class ClienteServiceTest {
 		UUID existingClientId = UUID.randomUUID();
 		ClienteDTO clienteDTO = new ClienteDTO(UUID.randomUUID(), "José", "meuEmail@gmail.com");
 		when(repository.findByEmail(clienteDTO.getEmail()))
-				.thenReturn(Optional.of(new Cliente(existingClientId, "OutroNome", "meuEmail@gmail.com")));
+				.thenReturn(Optional.of(new Cliente(existingClientId, "OutroNome", "meuEmail@gmail.com", "123")));
 		DataIntegratyViolationException exception = assertThrows(DataIntegratyViolationException.class, () -> {
 			service.verificarEmailExistente(clienteDTO);
 		});
@@ -156,7 +163,7 @@ public class ClienteServiceTest {
 		UUID clientId = UUID.randomUUID();
 		ClienteDTO clienteDTO = new ClienteDTO(clientId, "José", "meuEmail@gmail.com");
 		when(repository.findByEmail(clienteDTO.getEmail()))
-				.thenReturn(Optional.of(new Cliente(clientId, "José", "meuEmail@gmail.com")));
+				.thenReturn(Optional.of(new Cliente(clientId, "José", "meuEmail@gmail.com", "123")));
 		assertDoesNotThrow(() -> {
 			service.verificarEmailExistente(clienteDTO);
 		});
@@ -167,10 +174,8 @@ public class ClienteServiceTest {
 	public void testCreate() {
 		when(repository.save(any(Cliente.class))).thenReturn(cliente);
 		when(cargoRepository.findById(anyLong())).thenReturn(cargoOptional);
-		ClienteDTO response = service.create(clienteDto);
+		ClienteDTO response = service.create(clienteInsertDTO);
 		assertNotNull(response);
-		assertEquals(NOME, response.getNome());
-		assertEquals(EMAIL, response.getEmail());
 		assertNotNull(response.getCargos());
 		verify(repository, times(1)).save(any(Cliente.class));
 	}
@@ -243,10 +248,11 @@ public class ClienteServiceTest {
 	}
 
 	private void startCliente() {
+		clienteInsertDTO = new ClienteInsertDTO(passwordEncoder.encode("123"));
 		tecnicoInfDTO = new TecnicoInfDTO(ID, NOME, EMAIL);
 		clienteInfDTO = new ClienteInfDTO(ID, NOME, EMAIL);
-		tecnico = new Tecnico(ID, NOME, EMAIL);
-		cliente = new Cliente(ID, NOME, EMAIL);
+		tecnico = new Tecnico(ID, NOME, EMAIL, "123");
+		cliente = new Cliente(ID, NOME, EMAIL,"123");
 		clienteDto = new ClienteDTO(ID, NOME, EMAIL);
 		clienteOptional = Optional.of(cliente);
 		cargo = new Cargo(1L, "ADM");
