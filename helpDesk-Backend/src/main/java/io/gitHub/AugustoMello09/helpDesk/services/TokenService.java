@@ -32,6 +32,7 @@ public class TokenService {
 			
 			String token = JWT.create().withIssuer(ISSUER)
 					.withSubject(usuario.getEmail())
+					.withClaim("id", usuario.getId().toString())
 					.withClaim("nome", usuario.getNome())
 					.withClaim("email", usuario.getEmail())
 					.withClaim("roles", rolesAsString)					
