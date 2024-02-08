@@ -1,4 +1,35 @@
 <div class="main-container flex flex-col absolute top-0 left-0 right-0 bottom-0">
-  <app-header></app-header>
+  
+  <app-header [sidenav]="sidenav"></app-header>
+  
+  <mat-sidenav-container class="sidenav-container flex-1">
+    
+    <mat-sidenav #sidenav class="w-auto">
+      
+      <mat-list>
+        
+        <mat-list-item>
+         <mat-icon>home</mat-icon>
+         <span class="ml-3 text-center">
+           <a [routerLink]="['/']" (click)="sidenav.toggle()">Home</a>
+         </span>
+        </mat-list-item>
+
+        <mat-divider></mat-divider>
+   
+      
+      </mat-list>
+    
+    </mat-sidenav>
+    
+    <mat-sidenav-content>
+    
+      <router-outlet></router-outlet>
+    
+    </mat-sidenav-content>
+    
+  </mat-sidenav-container>
+
   <app-footer></app-footer>
+
 </div>

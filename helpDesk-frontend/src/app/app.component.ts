@@ -7,4 +7,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'helpDesk-frontend';
+  public events: string[] = [];
+  public opened: boolean = false;
 }
