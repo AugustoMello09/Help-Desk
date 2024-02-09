@@ -1,0 +1,51 @@
+<div>
+  <mat-card class="text-center mat-elevation-z8">
+      <mat-card-header>
+          <mat-card-title>Criar conta</mat-card-title>
+      </mat-card-header>
+     
+      <mat-card-content>
+          
+          <form #f="ngForm">
+           
+            <div class="flex flex-col">
+
+              <mat-form-field class="example-full-width py-2">
+                <mat-label for="nome">Nome</mat-label>
+                <input name="nome" type="text" maxlength="60" ngModel required matInput placeholder="Ex. teste" [(ngModel)]="usuario.nome">            
+                <div *ngIf="(f.controls['nome']?.invalid && f.controls['nome']?.touched) || f.controls['nome']?.dirty">
+                  <span class="text-custom-botao font-font-secundaria font-bold text-xs" *ngIf="f.controls['nome']?.errors?.['required']">O campo Nome deve ser preenchido.</span>
+                  <span class="text-custom-botao font-font-secundaria font-bold text-xs" *ngIf="f.controls['nome']?.errors?.['maxlength']">O campo Nome deve ter no máximo 60 caracteres.</span>
+                </div>
+              </mat-form-field>
+              
+              <mat-form-field class="example-full-width py-2">
+                <mat-label for="email">Email</mat-label>
+                <input name="email" type="text" ngModel required matInput placeholder="Ex. pat@example.com" [(ngModel)]="usuario.email">            
+                <div *ngIf="(f.controls['email']?.invalid && f.controls['email']?.touched) || f.controls['email']?.dirty">
+                  <span class="text-custom-botao font-font-secundaria font-bold text-xs" *ngIf="f.controls['email']?.errors?.['required']">Campo obrigatório.</span>
+                </div>
+              </mat-form-field>
+              
+              <mat-form-field class="example-full-width py-2">
+                <mat-label for="senha">Senha</mat-label>
+                <input name="senha" type="text" ngModel required matInput placeholder="Ex. suaSenha" [(ngModel)]="usuario.senha">            
+                <div *ngIf="(f.controls['senha']?.invalid && f.controls['senha']?.touched) || f.controls['senha']?.dirty">
+                  <span class="text-custom-botao font-font-secundaria font-bold text-xs" *ngIf="f.controls['senha']?.errors?.['required']">Campo obrigatório.</span>
+                </div>
+              </mat-form-field>
+
+            </div>  
+
+          </form>
+      
+        </mat-card-content>
+      
+      <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="create()">Criar conta</button>
+          <button mat-raised-button color="warn" (click)="login()">Fazer Login</button>
+      </mat-card-actions>
+
+  </mat-card>
+</div>
+

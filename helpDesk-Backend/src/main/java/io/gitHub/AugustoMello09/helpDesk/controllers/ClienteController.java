@@ -22,6 +22,7 @@ import io.gitHub.AugustoMello09.helpDesk.dto.ClienteInsertDTO;
 import io.gitHub.AugustoMello09.helpDesk.services.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 
 @CrossOrigin("*")
@@ -48,7 +49,7 @@ public class ClienteController {
 	
 	@Operation(summary = "Cria um Cliente no banco de dados.")
 	@PostMapping
-	public ResponseEntity<ClienteDTO> create(@RequestBody ClienteInsertDTO dto) {
+	public ResponseEntity<ClienteDTO> create(@Valid @RequestBody ClienteInsertDTO dto) {
 		var newObj = service.create(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
 		return ResponseEntity.created(uri).body(newObj);
@@ -56,7 +57,7 @@ public class ClienteController {
 	
 	@Operation(summary = "Busca um Cliente no banco de dados e atualiza o email.")
 	@PatchMapping(value = "/{id}")
-	public ResponseEntity<ClienteDTO> update(@RequestBody ClienteDTO dto,@PathVariable UUID id){
+	public ResponseEntity<ClienteDTO> update(@Valid @RequestBody ClienteDTO dto,@PathVariable UUID id){
 		var newObj = service.updateEmail(dto, id);
 		return ResponseEntity.ok().body(newObj);
 	}
@@ -70,7 +71,7 @@ public class ClienteController {
 	
 	@Operation(summary = "Cria um chamado.")
 	@PostMapping(value = "/fazerChamado/{id}")
-	public ResponseEntity<ChamadoDTO> criarChamado(@RequestBody ChamadoDTO dto, @PathVariable UUID id){
+	public ResponseEntity<ChamadoDTO> criarChamado(@Valid @RequestBody ChamadoDTO dto, @PathVariable UUID id){
 		var newObj = service.criarChamado(dto, id);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
 		return ResponseEntity.created(uri).body(newObj);

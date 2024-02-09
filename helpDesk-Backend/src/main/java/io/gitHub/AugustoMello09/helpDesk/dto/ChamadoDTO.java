@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.gitHub.AugustoMello09.helpDesk.entities.Chamado;
 import io.gitHub.AugustoMello09.helpDesk.entities.enums.StatusChamado;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -17,7 +19,9 @@ public class ChamadoDTO {
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	private LocalDateTime dataAberto;
-
+	
+	@Size(max = 200, message = "tamanho máximo de 200 caracteres.")
+	@NotBlank(message = "Campo obrigatório.")
 	private String descricao;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy")

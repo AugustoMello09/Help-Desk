@@ -1,7 +1,6 @@
 package io.gitHub.AugustoMello09.helpDesk.controllers;
 
 import java.net.URI;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +22,7 @@ import io.gitHub.AugustoMello09.helpDesk.dto.TecnicoInsertDTO;
 import io.gitHub.AugustoMello09.helpDesk.services.TecnicoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @CrossOrigin("*")
 @Tag(name = "Help Desk Técnico endpoint")
@@ -48,7 +48,7 @@ public class TecnicoController {
 	
 	@Operation(summary = "Cria um técnico no banco de dados.")
 	@PostMapping
-	public ResponseEntity<TecnicoDTO> create(@RequestBody TecnicoInsertDTO dto) {
+	public ResponseEntity<TecnicoDTO> create(@Valid @RequestBody TecnicoInsertDTO dto) {
 		var newObj = service.create(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newObj.getId()).toUri();
 		return ResponseEntity.created(uri).body(newObj);
@@ -56,7 +56,7 @@ public class TecnicoController {
 	
 	@Operation(summary = "Busca um técnico no banco de dados e atualiza o email.")
 	@PatchMapping(value = "/{id}")
-	public ResponseEntity<TecnicoDTO> update(@RequestBody TecnicoDTO dto, @PathVariable UUID id) {
+	public ResponseEntity<TecnicoDTO> update(@Valid @RequestBody TecnicoDTO dto, @PathVariable UUID id) {
 		var newObj = service.updateEmail(dto, id);
 		return ResponseEntity.ok().body(newObj);
 	}
