@@ -3,9 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
 import { HomeGuard } from './home.guard';
+import { PessoaComponent } from './telas/pessoa/pessoa.component';
+import { AuthGuard } from './auth.guard';
 
 const routes: Routes = [
   {path: '', component:HomeComponent, canActivate : [HomeGuard] },
+  {path: 'conta', component:PessoaComponent, canActivate : [AuthGuard] },
 ];
 
 @NgModule({

@@ -1,0 +1,4 @@
+mat-card-content {
+  display: flex !important;
+  flex-direction: column !important;
+}

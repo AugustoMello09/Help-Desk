@@ -1,0 +1,21 @@
+<div class="h-[80vh] flex justify-center items-center">
+
+  <mat-card class="m-5 w-full mat-elevation-z8">
+      
+      <mat-card-header class="flex justify-center items-center">
+          <mat-card-title>Minha conta</mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+          <A class="text-xl font-font-primaria font-semibold">Nome: <span>{{ tokenData.nome }}</span></A>
+          <A class="text-xl font-font-primaria font-semibold">Email: <span>{{ tokenData.email }}</span></A>
+          <A class="text-xl font-font-primaria font-semibold">Cargo: <span>{{ tokenData.roles }}</span></A>
+      </mat-card-content>
+      
+      <mat-card-actions class="w-full text-center">
+        <button mat-raised-button color="primary" (click)="sair()">Sair</button>
+      </mat-card-actions>
+  
+    </mat-card>
+
+</div>

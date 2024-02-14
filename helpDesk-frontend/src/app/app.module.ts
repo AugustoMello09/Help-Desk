@@ -17,6 +17,7 @@ import { LoginComponent } from './telas/login/login.component';
 import { RegistroComponent } from './telas/registro/registro.component';
 import { AuthService } from './service/auth.service';
 import { AuthInterceptor } from './auth.interceptor';
+import { PessoaComponent } from './telas/pessoa/pessoa.component';
 
 
 @NgModule({
@@ -28,6 +29,7 @@ import { AuthInterceptor } from './auth.interceptor';
     DialogComponent,
     LoginComponent,
     RegistroComponent,
+    PessoaComponent,
   ],
   imports: [
     BrowserModule,
