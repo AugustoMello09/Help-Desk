@@ -1,0 +1,36 @@
+
+ 
+  <div class="h-[80vh] w-full flex justify-center items-center overflow-hidden tablet:overflow-y-scroll ">
+    
+    <div class="flex justify-center items-center desktop2:flex-wrap">
+
+      <ng-container *ngIf="chamados && chamados.length > 0; else semChamados">
+    
+        <mat-card *ngFor="let chamado of chamados" class="mat-elevation-z8 mx-1 w-auto deskto: tablet: desktop2:mb-1">
+        
+          <mat-card-header>
+            <mat-card-title class="font-font-primaria font-bold text-4xl">{{ chamado.cliente.nome }}</mat-card-title>
+            <mat-card-subtitle [ngClass]="prioridade(chamado.statusChamado)">{{ chamado.statusChamado }}</mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content class="">
+            <p class="font-font-primaria "><span class="font-font-primaria font-bold text-lg">Data de Abertura:</span>{{ chamado.dataAberto }}</p>
+            <p class="font-font-primaria "><span class="font-font-primaria font-bold text-lg">Descrição:</span>{{ chamado.descricao }}</p> 
+          </mat-card-content>
+            
+        </mat-card>
+    </ng-container>
+    <ng-template #semChamados>
+      <button mat-raised-button color="accent" (click)="abrirChamado()">Abrir chamado</button>
+    </ng-template>
+    
+  </div>
+
+</div>
+  
+
+<div class="w-full text-center" *ngIf="chamados && chamados.length > 0">
+    <button mat-raised-button color="accent" (click)="abrirChamado()">Abrir chamado</button>
+</div>
+  
+

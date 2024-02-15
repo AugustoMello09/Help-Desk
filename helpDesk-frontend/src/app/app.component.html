@@ -25,6 +25,15 @@
          </mat-list-item>
 
          <mat-divider></mat-divider>
+
+         <mat-list-item *ngIf="hasRole('ROLE_OPERATOR')">
+          <mat-icon>notifications</mat-icon>
+          <span class="ml-3 text-center">
+            <a [routerLink]="['/chamado']" (click)="sidenav.toggle()">Meus Chamados</a>
+          </span>
+         </mat-list-item>
+
+         <mat-divider></mat-divider>
    
       
       </mat-list>

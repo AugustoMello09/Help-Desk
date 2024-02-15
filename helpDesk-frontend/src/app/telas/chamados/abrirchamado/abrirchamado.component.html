@@ -1,0 +1,29 @@
+<div>
+  <mat-card class="text-center mat-elevation-z8">
+      <mat-card-header>
+          <mat-card-title>Abrir chamado</mat-card-title>
+      </mat-card-header>
+     
+      <mat-card-content>
+          
+          <form #f="ngForm">
+            
+           <div class="flex flex-col">
+              <label for="descricao">Descrição</label>
+              <input name="descricao" matInput placeholder="Descreva seu problema. " class="w-auto p-10" [(ngModel)]="chamado.descricao" >   
+           </div>    
+
+          </form>
+      
+        </mat-card-content>
+      
+      <mat-card-actions>
+
+          <button mat-raised-button color="warn" (click)="cancel()">Cancelar</button>
+          <button mat-raised-button color="primary" (click)="save()">Salvar</button>
+
+      </mat-card-actions>
+
+  </mat-card>
+</div>
+

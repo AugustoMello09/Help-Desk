@@ -18,6 +18,8 @@ import { RegistroComponent } from './telas/registro/registro.component';
 import { AuthService } from './service/auth.service';
 import { AuthInterceptor } from './auth.interceptor';
 import { PessoaComponent } from './telas/pessoa/pessoa.component';
+import { ChamadosComponent } from './telas/chamados/chamados.component';
+import { AbrirchamadoComponent } from './telas/chamados/abrirchamado/abrirchamado.component';
 
 
 @NgModule({
@@ -30,6 +32,8 @@ import { PessoaComponent } from './telas/pessoa/pessoa.component';
     LoginComponent,
     RegistroComponent,
     PessoaComponent,
+    ChamadosComponent,
+    AbrirchamadoComponent,
   ],
   imports: [
     BrowserModule,

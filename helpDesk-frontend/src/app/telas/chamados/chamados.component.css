@@ -1,0 +1,11 @@
+.ABERTO {
+  color: green; 
+}
+
+.ANDAMENTO {
+  color: chocolate; 
+}
+
+.FINALIZADO {
+  color:  red; 
+}
