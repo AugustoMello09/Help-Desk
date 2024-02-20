@@ -34,6 +34,19 @@
          </mat-list-item>
 
          <mat-divider></mat-divider>
+
+         <mat-list-item [matMenuTriggerFor]="menu" *ngIf="hasRole('ROLE_ADMIN')">
+          <mat-icon>search</mat-icon>
+          <span class="ml-3 text-center">
+            <a (click)="sidenav.toggle()">Buscar Chamados</a>
+            <mat-menu #menu="matMenu">
+              <a routerLink="/buscaChamado" mat-menu-item> Aberta ou em andamento</a>
+              <a routerLink="/buscaChamado/fechado" mat-menu-item> Finalizada</a>
+            </mat-menu>
+          </span>
+         </mat-list-item>
+
+         <mat-divider></mat-divider>
    
       
       </mat-list>

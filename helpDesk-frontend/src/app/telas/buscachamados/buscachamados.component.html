@@ -1,0 +1,59 @@
+<div class="main h-[80vh] flex justify-center items-center">
+
+  <mat-card class="card m-5 w-full mat-elevation-z8 tablet:m-0 tablet:w-screen">
+      
+      <mat-card-header>
+          <mat-card-title>Gerenciar Chamados</mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+          
+        <table mat-table [dataSource]="dataSource" class="w-full desktop:p-7 tablet:w-screen">
+
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef> Id </th>
+            <td mat-cell *matCellDef="let element"> {{ element.id }}</td> 
+          </ng-container>
+        
+          <ng-container matColumnDef="descricao">
+            <th mat-header-cell *matHeaderCellDef> Descricao </th>
+            <td mat-cell *matCellDef="let element"> {{ element.descricao }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef> Status </th>
+            <td mat-cell *matCellDef="let element" [ngClass]="prioridade(element.statusChamado)"> {{ element.statusChamado }} </td>
+          </ng-container>
+        
+          <div class="b">
+            <ng-container matColumnDef="actions" class="a">
+              <th mat-header-cell *matHeaderCellDef> Ações </th>
+              <td mat-cell *matCellDef="let element"> 
+                <ng-container *ngIf="element.statusChamado === 'ABERTO'">
+                  <button mat-raised-button color="primary" (click)="aceitarChamado(element.id)">Aceitar Chamado</button>
+                </ng-container>
+                <ng-container *ngIf="element.statusChamado === 'ANDAMENTO'">
+                  <button mat-raised-button color="warn" (click)="finalizarChamado(element.id)">Finalizar Chamado</button>
+                </ng-container>
+              </td>
+            </ng-container>
+          </div>
+        
+          <ng-container matColumnDef="symbol">
+            <th mat-header-cell *matHeaderCellDef> Symbol </th>
+            <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
+          </ng-container>
+        
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        
+        </table>
+
+      </mat-card-content>
+
+  
+    </mat-card>
+
+</div>
+
+

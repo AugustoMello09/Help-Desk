@@ -131,7 +131,7 @@ public class TecnicoService {
 	    emailModel.setEmailFrom(emailFrom);
 	    emailModel.setEmailTo(chamado.getCliente().getEmail());
 	    emailModel.setSubject("CHAMADO FINALIZADO");
-	    emailModel.setText(chamado.getCliente().getNome() + " Seu chamado foi finalizado, Obrigado(A) pela confiança.");
+	    emailModel.setText(chamado.getCliente().getNome() + " Seu chamado foi finalizado pelo técnico "+ chamado.getTecnico().getNome() + ", Obrigado(A) pela confiança. número do chamado #" + chamado.getId());
 	    emailModel.setStatusEmail(StatusEmail.SENT);
 	    log.info("Email enviado com sucesso para: " + emailModel.getEmailTo());
 	    try {

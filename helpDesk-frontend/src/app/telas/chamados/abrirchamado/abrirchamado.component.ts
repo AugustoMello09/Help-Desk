@@ -37,7 +37,6 @@ export class AbrirchamadoComponent implements OnInit {
   save() {
     this.service.abrirChamdo(this.chamado, this.clienteId.id).subscribe(data => {
       this.chamado = data;
-      console.log(this.chamado);
       window.location.reload();
       this.dialogRef.close(true);
     })

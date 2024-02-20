@@ -6,11 +6,15 @@ import { HomeGuard } from './home.guard';
 import { PessoaComponent } from './telas/pessoa/pessoa.component';
 import { AuthGuard } from './auth.guard';
 import { ChamadosComponent } from './telas/chamados/chamados.component';
+import { BuscachamadosComponent } from './telas/buscachamados/buscachamados.component';
+import { FechadoComponent } from './telas/buscachamados/fechado/fechado.component';
 
 const routes: Routes = [
   {path: '', component:HomeComponent, canActivate : [HomeGuard] },
   { path: 'conta', component: PessoaComponent, canActivate: [AuthGuard] },
-   {path: 'chamado', component:ChamadosComponent, canActivate : [AuthGuard] },
+  { path: 'chamado', component: ChamadosComponent, canActivate: [AuthGuard] },
+  {path: 'buscaChamado', component:BuscachamadosComponent, canActivate : [AuthGuard] },
+  {path: 'buscaChamado/fechado', component:FechadoComponent, canActivate : [AuthGuard] },
 ];
 
 @NgModule({

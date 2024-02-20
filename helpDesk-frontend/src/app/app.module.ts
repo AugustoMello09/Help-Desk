@@ -20,6 +20,8 @@ import { AuthInterceptor } from './auth.interceptor';
 import { PessoaComponent } from './telas/pessoa/pessoa.component';
 import { ChamadosComponent } from './telas/chamados/chamados.component';
 import { AbrirchamadoComponent } from './telas/chamados/abrirchamado/abrirchamado.component';
+import { BuscachamadosComponent } from './telas/buscachamados/buscachamados.component';
+import { FechadoComponent } from './telas/buscachamados/fechado/fechado.component';
 
 
 @NgModule({
@@ -34,6 +36,8 @@ import { AbrirchamadoComponent } from './telas/chamados/abrirchamado/abrirchamad
     PessoaComponent,
     ChamadosComponent,
     AbrirchamadoComponent,
+    BuscachamadosComponent,
+    FechadoComponent,
   ],
   imports: [
     BrowserModule,

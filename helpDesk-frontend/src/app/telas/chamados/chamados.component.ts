@@ -29,7 +29,6 @@ export class ChamadosComponent implements OnInit {
       nome = tokenData.nome;
       this.tecnico.listaChamados(nome).subscribe(res => {
         this.chamados = res;
-        console.log(this.chamados)
       })
     }
   }

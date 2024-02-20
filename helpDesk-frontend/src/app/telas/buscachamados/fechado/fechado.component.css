@@ -1,0 +1,27 @@
+.ABERTO {
+  color: green; 
+}
+
+.ANDAMENTO {
+  color: chocolate; 
+}
+
+.FINALIZADO {
+  color:  red; 
+}
+
+th {
+  font-weight: bold;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.2rem;
+}
+
+td {
+  padding-top: 0.5em !important;
+}
+
+@media (max-width: 1200px) {
+  th {
+    padding: 1em !important;
+  }
+}

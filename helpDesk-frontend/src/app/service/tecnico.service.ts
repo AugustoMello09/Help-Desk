@@ -23,4 +23,13 @@ export class TecnicoService {
     return this.http.get<Chamado[]>(url);
   }
 
+  public aceitarChamado(id: any, tecnicoId: any): Observable<any>{
+    const url = `${this.baseUrl}/tecnico/aceitarChamado/${id}/tecnicoId/${tecnicoId}`
+    return this.http.post<any>(url, id, tecnicoId);
+  }
+
+  public finalizarChamado(id: any, tecnicoId: any): Observable<any>{
+    const url = `${this.baseUrl}/tecnico/finalizarChamado/${id}/tecnicoId/${tecnicoId}`
+    return this.http.post<any>(url, id, tecnicoId);
+  }
 }
