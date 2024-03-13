@@ -8,9 +8,8 @@ import org.springframework.stereotype.Service;
 
 import io.gitHub.AugustoMello09.helpDesk.entities.Usuario;
 import io.gitHub.AugustoMello09.helpDesk.repositories.UsuarioRepository;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+
 @Service
 public class AuthorizationService implements UserDetailsService {
 	
@@ -21,10 +20,8 @@ public class AuthorizationService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		Usuario entity = repository.findByEmail(email);
         if (entity == null) {
-            log.error("Email não encontrado " + email);
             throw new IllegalArgumentException("Email não encontrado");
         }
-        log.info("Email encontrado " + email);
         return entity;
 	}
 

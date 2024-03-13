@@ -24,12 +24,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 @EqualsAndHashCode(of = "id")
-@Getter
-@Setter
 @Entity
 @Table(name = "tb_usuario")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -98,4 +94,46 @@ public abstract class Usuario implements UserDetails, Serializable {
 		return true;
 	}
 
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+
+	public Set<Cargo> getCargos() {
+		return cargos;
+	}
+
+	public void setCargos(Set<Cargo> cargos) {
+		this.cargos = cargos;
+	}
+
+	
+	
 }

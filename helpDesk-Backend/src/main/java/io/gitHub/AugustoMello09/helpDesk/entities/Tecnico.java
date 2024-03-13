@@ -7,13 +7,7 @@ import java.util.UUID;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "tb_tecnico")
 public class Tecnico extends Usuario {
@@ -21,9 +15,21 @@ public class Tecnico extends Usuario {
 	
 	@OneToMany(mappedBy = "tecnico")
 	private List<Chamado> chamados = new ArrayList<>();
+	
+	public Tecnico() {}
 
 	public Tecnico(UUID id, String nome, String email, String senha) {
 		super(id, nome, email, senha);
 	}
+
+	public List<Chamado> getChamados() {
+		return chamados;
+	}
+
+	public void setChamados(List<Chamado> chamados) {
+		this.chamados = chamados;
+	}
+	
+	
 
 }

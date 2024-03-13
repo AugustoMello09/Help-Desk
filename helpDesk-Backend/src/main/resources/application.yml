@@ -2,9 +2,11 @@ server:
   port: 8080
 
 spring:
+  jpa:
+    open-in-view: true
   profiles:
     active:
-    - test 
+    - test
   mail: 
     host: smtp.gmail.com
     port: 587

@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/helpdesk
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  #  properties:
+   #   jakarta:
+    #    persistence:
+     #     schema-generation:
+      #      create-source: metadata
+       #     scripts:
+        #      action: create
+         #     create-target: create.sql
+          # hibernate:
+           # hbm2ddl:
+            #  delimiter: ";"

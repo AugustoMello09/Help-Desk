@@ -13,13 +13,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 
 @EqualsAndHashCode(of = "id")
-@Getter
-@Setter
 @Entity
 @Table(name = "tb_chamado")
 public class Chamado implements Serializable{
@@ -56,6 +52,63 @@ public class Chamado implements Serializable{
 		this.cliente = cliente;
 		this.tecnico = tecnico;
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public LocalDateTime getDataAberto() {
+		return dataAberto;
+	}
+
+	public void setDataAberto(LocalDateTime dataAberto) {
+		this.dataAberto = dataAberto;
+	}
+
+	public String getDescricao() {
+		return descricao;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+
+	public LocalDateTime getDataFechamento() {
+		return dataFechamento;
+	}
+
+	public void setDataFechamento(LocalDateTime dataFechamento) {
+		this.dataFechamento = dataFechamento;
+	}
+
+	public StatusChamado getStatusChamado() {
+		return statusChamado;
+	}
+
+	public void setStatusChamado(StatusChamado statusChamado) {
+		this.statusChamado = statusChamado;
+	}
+
+	public Tecnico getTecnico() {
+		return tecnico;
+	}
+
+	public void setTecnico(Tecnico tecnico) {
+		this.tecnico = tecnico;
+	}
+
+	public Cliente getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
+	
 	
 	
 	

@@ -1,0 +1,15 @@
+create table tb_cargo (id bigint not null auto_increment, authority varchar(255), primary key (id)) engine=InnoDB;
+create table tb_chamado (status_chamado tinyint check (status_chamado between 0 and 2), data_aberto datetime(6), data_fechamento datetime(6), id bigint not null auto_increment, cliente_id binary(16), tecnico_id binary(16), descricao TEXT, primary key (id)) engine=InnoDB;
+create table tb_cliente (id binary(16) not null, primary key (id)) engine=InnoDB;
+create table tb_tecnico (id binary(16) not null, primary key (id)) engine=InnoDB;
+create table tb_usuario (id binary(16) not null, email varchar(255), nome varchar(255), senha varchar(255), primary key (id)) engine=InnoDB;
+create table tb_usuario_cargo (cargo_id bigint not null, usuario_id binary(16) not null, primary key (cargo_id, usuario_id)) engine=InnoDB;
+alter table tb_usuario add constraint UK_spmnyb4dsul95fjmr5kmdmvub unique (email);
+alter table tb_chamado add constraint FKkh3jfc4il8xc197t8c1hm9ujk foreign key (cliente_id) references tb_cliente (id);
+alter table tb_chamado add constraint FKtco8eisf1rkpph0nhqnntu3vu foreign key (tecnico_id) references tb_tecnico (id);
+alter table tb_cliente add constraint FKi7n0rour87vrarijeqn3r88a3 foreign key (id) references tb_usuario (id);
+alter table tb_tecnico add constraint FKfu5ndk1jxe1ab25v7ryc3t4wi foreign key (id) references tb_usuario (id);
+alter table tb_usuario_cargo add constraint FKfoxfmrp32u59p9yvguydp9ybj foreign key (cargo_id) references tb_cargo (id);
+alter table tb_usuario_cargo add constraint FKdaew2172j172duhsiyma5rfq5 foreign key (usuario_id) references tb_usuario (id);
+INSERT INTO tb_cargo (authority) VALUES ('ROLE_OPERATOR');
+INSERT INTO tb_cargo (authority) VALUES ('ROLE_ADMIN');

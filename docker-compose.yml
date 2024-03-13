@@ -1,0 +1,45 @@
+version: "3.7"
+
+services:
+  db:
+    image: mysql:latest
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: helpdesk
+    ports:
+      - 3307:3306
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+  
+  desk:
+    image: testedev:v2
+    container_name: helpdesk-container
+    ports:
+    - 8080:8080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/helpdesk
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    networks:
+      - dev-network
+    depends_on:
+      db:
+       condition: service_healthy
+
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - 8000:80
+    networks:
+      - dev-network          
+
+networks:
+  dev-network:
+    driver: bridge

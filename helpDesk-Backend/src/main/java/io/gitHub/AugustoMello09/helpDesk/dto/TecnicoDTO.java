@@ -8,9 +8,8 @@ import io.gitHub.AugustoMello09.helpDesk.entities.Tecnico;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 
-@Data
+
 public class TecnicoDTO {
 
 	private UUID id;
@@ -41,5 +40,39 @@ public class TecnicoDTO {
 		this.nome = nome;
 		this.email = email;
 	}
+
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public Set<CargoDTO> getCargos() {
+		return cargos;
+	}
+
+	public void setCargos(Set<CargoDTO> cargos) {
+		this.cargos = cargos;
+	}
+	
+	
 
 }
