@@ -19,7 +19,7 @@ services:
       retries: 5
   
   desk:
-    image: testedev:v2
+    image: augustomello09/help-desk-backend:latest
     container_name: helpdesk-container
     ports:
     - 8080:8080
