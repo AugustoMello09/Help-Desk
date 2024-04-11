@@ -499,7 +499,7 @@ __Executar__
 - Navegue até a pasta do projeto front-end:
 
 ```bash
-cd vinhoJa/vinhoJa-Frontend
+cd helpdesk/helpdesk-frontend
 ```
 
 __Instale as dependências do projeto:__
